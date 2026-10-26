@@ -96,4 +96,76 @@ FROM TrazabilidadUnidades AS TU
 GO
 
 -- =======================================================================================================================================
+--4.1 Todo de Pablo
+select year(c.Fecha) as año,month(c.Fecha) as mes ,e.Gravedad, count(ce.Enfermedad_ID) as mensual
+from CheckeoEnfermedad ce
+inner join Enfermedad e on e.Enfermedad_ID=ce.Enfermedad_ID
+inner join Checkeo c on c.Checkeo_ID=ce.Checkeo_ID
+group by year(c.Fecha),month(c.Fecha),e.Gravedad
+having count(ce.Enfermedad_ID)>1;
+
+--4.2
+select dr.Donante_Receptor_ID as ID, p.DocumentoDeIdentidad as CI, CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', p.ApMaterno) AS Nombre_Completo
+from Extraccion e
+inner join Donante_Receptor dr on dr.Donante_Receptor_ID=e.Donante_ID
+inner join Persona p on p.Persona_ID=dr.Persona_ID
+where year(e.Fecha)=2024
+except
+select dr.Donante_Receptor_ID as ID, p.DocumentoDeIdentidad as CI, CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', p.ApMaterno) AS Nombre_Completo
+from Extraccion e
+inner join Donante_Receptor dr on dr.Donante_Receptor_ID=e.Donante_ID
+inner join Persona p on p.Persona_ID=dr.Persona_ID
+where year(e.Fecha)=2025
+
+--4.3
+select le.LugarExtraccion_ID as ID, le.Tipo,d.Calle
+from TipoComponente tc
+inner join UnidadExtraida ue on ue.TipoComponente_ID=tc.TipoComponente_ID
+inner join Extraccion e on e.Extraccion_ID = ue.Extraccion_ID
+inner join LugarExtraccion le on le.LugarExtraccion_ID=e.LugarExtraccion_ID
+inner join Direccion d on d.Direccion_ID=le.Direccion_ID
+group by le.LugarExtraccion_ID,le.Tipo,d.Calle
+having count(distinct tc.TipoComponente_ID) = (select count(TipoComponente_ID) from TipoComponente)
+
+--4.4
+
+with VolumenSuma as (
+select p.Personal_ID,concat(pe.Nombre,' ',pe.ApPaterno,' ', pe.ApMaterno) as Nombre_Completo,c.Nombre as Cargo ,sum(e.VolumenTotal_ML) as total
+from Personal p
+inner join Extraccion e on e.Personal_ID=p.Personal_ID
+inner join persona pe on pe.Persona_ID= p.Persona_ID
+inner join Cargo c on c.Cargo_ID=p.Cargo_ID
+group by p.Personal_ID,pe.Nombre,pe.ApPaterno,pe.ApMaterno,c.Nombre)
+
+select vm.Nombre_Completo,vm.Cargo,vm.total,
+    (select top 1 e.Fecha
+         from Extraccion e
+         where e.Personal_ID=vm.Personal_ID
+         order by e.Fecha desc ) as Ultima_Fecha,
+    (select top 1 e.Metodo
+         from Extraccion e
+         where e.Personal_ID=vm.Personal_ID
+         order by e.Fecha desc)
+from VolumenSuma vm
+where vm.total>(select avg(VolumenSuma.total) from VolumenSuma);
+
+--alt con Last value
+with VolumenSuma as (
+select p.Personal_ID,concat(pe.Nombre,' ',pe.ApPaterno,' ', pe.ApMaterno) as Nombre_Completo,c.Nombre as Cargo ,sum(e.VolumenTotal_ML) as total
+from Personal p
+inner join Extraccion e on e.Personal_ID=p.Personal_ID
+inner join persona pe on pe.Persona_ID= p.Persona_ID
+inner join Cargo c on c.Cargo_ID=p.Cargo_ID
+group by p.Personal_ID,pe.Nombre,pe.ApPaterno,pe.ApMaterno,c.Nombre),
+
+Ultima_FyM as(
+select distinct Personal_ID,
+       last_value(Fecha) over (partition by Personal_ID order by Fecha ROWS between unbounded preceding and unbounded following ) as Ultima_fecha,
+       last_value(Metodo) over (partition by Personal_ID order by Fecha ROWS  between unbounded preceding and unbounded following ) as Ultimo_metodo
+from Extraccion)
+
+select v.Nombre_Completo,v.Cargo,v.total,u.Ultima_fecha,u.Ultimo_metodo
+from VolumenSuma v
+inner join Ultima_FyM u on u.Personal_ID=v.Personal_ID
+where v.total>(select avg(total) from VolumenSuma);
 
