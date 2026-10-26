@@ -35,3 +35,31 @@ RETURN (
     HAVING COUNT(ce.Enfermedad_ID) >= @MinCasos
 );
 GO
+/*======================================================================================================================================
+THIERRY 
+
+CREATE OR ALTER FUNCTION dbo.fn_FechaVencimiento (@UnidadID INT)
+RETURNS DATETIME
+AS
+BEGIN
+    DECLARE @Fecha DATETIME;
+    SELECT @Fecha = DATEADD(DAY, t.DiasVigencia, u.FechaObtencion)
+    FROM dbo.UnidadExtraida u
+    JOIN dbo.TipoComponente t ON t.TipoComponente_ID = u.TipoComponente_ID
+    WHERE u.Unidad_ID = @UnidadID;
+    RETURN @Fecha;
+END;
+GO
+/*======================================================================================================================================
+ENZO
+
+CREATE OR ALTER FUNCTION dbo.fn_CantidadExtracciones (@DonanteID INT)
+RETURNS INT
+AS
+BEGIN
+    DECLARE @Total INT;
+    SELECT @Total = COUNT(*) FROM dbo.Extraccion WHERE Donante_ID = @DonanteID;
+    RETURN @Total;
+END;
+GO
+
