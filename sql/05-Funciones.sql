@@ -37,6 +37,7 @@ RETURN (
 GO
 /*======================================================================================================================================
 THIERRY 
+*/
 
 CREATE OR ALTER FUNCTION dbo.fn_FechaVencimiento (@UnidadID INT)
 RETURNS DATETIME
@@ -52,7 +53,7 @@ END;
 GO
 /*=======================================================================================================================================
 ENZO
-
+*/
 CREATE OR ALTER FUNCTION dbo.fn_CantidadExtracciones (@DonanteID INT)
 RETURNS INT
 AS
