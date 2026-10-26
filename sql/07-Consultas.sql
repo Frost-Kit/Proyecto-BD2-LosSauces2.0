@@ -7,27 +7,29 @@ SELECT
     TP.TipoComponente,
     TP.DiasVigencia,
     COUNT(UE.Unidad_ID) AS UnidadesDescartadas
-FROM TipoComponente TP 
-    INNER JOIN UnidadExtraida UE ON TP.TipoComponente_ID = UE.TipoComponente_ID
+FROM TipoComponente AS TP 
+    INNER JOIN UnidadExtraida AS UE ON TP.TipoComponente_ID = UE.TipoComponente_ID
 WHERE Estado = 0
 GROUP BY 
     TP.TipoComponente,
     TP.DiasVigencia
 HAVING COUNT(UE.Unidad_ID) > 3;
+GO
 
 -- 3.2
 -- Aqui talves unas views para acortar codigo...
 SELECT DISTINCT
     DG.Ciudad,
     DG.Pais
-FROM V_DireccionesCompletas DG
+FROM V_DireccionesCompletas AS DG
     INNER JOIN LugarExtraccion AS LE ON DG.Direccion_ID = LE.Direccion_ID
 INTERSECT
 SELECT DISTINCT
     DG.Ciudad,
     DG.Pais
 FROM V_DireccionesCompletas DG
-    INNER JOIN HistorialSolicitudes HS ON DG.Direccion_ID = HS.Direccion_ID;
+    INNER JOIN HistorialSolicitudes AS HS ON DG.Direccion_ID = HS.Direccion_ID;
+GO
 
 -- 3.3
 SELECT 
@@ -38,7 +40,8 @@ WHERE UE.UnidadOrigen_ID IS NULL
         SELECT SUM(UEh.VolumenML) 
         FROM UnidadExtraida UEh
         WHERE UEh.UnidadOrigen_ID = UE.Unidad_ID
-    ) < (VolumenML * 0.75)
+    ) < (VolumenML * 0.75);
+GO
 
 -- 3.4
 WITH TrazabilidadUnidades AS
@@ -90,6 +93,7 @@ FROM TrazabilidadUnidades AS TU
         ON R.Donante_Receptor_ID = HS.Paciente_ID
     INNER JOIN Persona AS PR
         ON PR.Persona_ID = R.Persona_ID;
+GO
 
 -- =======================================================================================================================================
 

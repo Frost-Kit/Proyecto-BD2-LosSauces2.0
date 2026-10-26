@@ -7,8 +7,10 @@ RETURNS VARCHAR(100)
 AS
 BEGIN
     RETURN (
-        SELECT T.TipoComponente FROM TipoComponente T
-        INNER JOIN UnidadExtraida U ON T.TipoComponente_ID = U.TipoComponente_ID
+        SELECT T.TipoComponente 
+        FROM TipoComponente AS T
+            INNER JOIN UnidadExtraida AS U 
+                ON T.TipoComponente_ID = U.TipoComponente_ID
         WHERE Unidad_ID = @UnidadS_ID
     )
 END;
