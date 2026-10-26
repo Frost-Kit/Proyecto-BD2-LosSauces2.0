@@ -1,4 +1,15 @@
 -- 7. CONSULTAS
+/* --------------------  Consultas de Mimi --------------------*/
+
+-- 1 --
+select p.nombre, p.ApPaterno, p.ApMaterno, p.DocumentoDeIdentidad, FactorRH, GrupoSanguineo, sum(u.Unidad_ID) as VolumenTotalML, count(h.Unidad_ID) as CantidadUnidades
+from Persona p
+	INNER JOIN Donante_Receptor dr on dr.Persona_ID = p.Persona_ID
+	INNER JOIN HistorialSolicitudes h on h.Paciente_ID = dr.Donante_Receptor_ID
+	INNER JOIN UnidadExtraida u on u.Unidad_ID = h.Unidad_ID
+Group by p.nombre, p.ApPaterno, p.ApMaterno, p.DocumentoDeIdentidad, dr.GrupoSanguineo, dr.FactorRH
+Having count(h.Unidad_ID) > 2;
+
 /*=======================================================================================================================================
     TODO: Cristhian
 */
