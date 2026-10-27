@@ -105,6 +105,24 @@ FROM TrazabilidadUnidades AS TU
     INNER JOIN Persona AS PR
         ON PR.Persona_ID = R.Persona_ID;
 GO
+-- Variante con la Vista V_DireccionesCompletas
+SELECT
+    TU.Donante, TU.FechaExtraccion,
+    TU.ID_UnidadMadre, TU.TipoComponenteMadre,
+    TU.ID_UnidadHija, TU.TipoComponenteHija,
+    CONCAT(
+        PR.Nombre, ' ', PR.ApPaterno, ' ',PR.ApMaterno
+    ) AS Receptor,
+    TU.VolumenUnidadML
+FROM V_UnidadesHijasInfoCompleta AS TU
+    INNER JOIN HistorialSolicitudes AS HS
+        ON HS.Unidad_ID = TU.ID_UnidadHija
+    INNER JOIN Donante_Receptor AS R
+        ON R.Donante_Receptor_ID = HS.Paciente_ID
+    INNER JOIN Persona AS PR
+        ON PR.Persona_ID = R.Persona_ID
+WHERE TU.ID_UnidadMadre IS NOT NULL;
+GO
 
 -- =======================================================================================================================================
 --4.1 Todo de Pablo
