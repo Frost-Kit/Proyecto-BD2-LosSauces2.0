@@ -1,1390 +1,855 @@
+-- =============================================================================
+-- 2. POBLADO MASIVO PROFESIONAL - SISTEMA DE BANCO DE SANGRE (TARIJA, BOLIVIA)
+-- Especialidad: Medicina Transfusional, Inmunohematología y Fraccionamiento
+-- =============================================================================
 USE BancoSangre;
 GO
 SET NOCOUNT ON;
+SET DATEFORMAT ymd;
 GO
 
-/* =========================================================================
-   1. PAISES (6 registros)
-   ========================================================================= */
+-- 1. PAIS (5 registros: predominio Bolivia y países limítrofes del sur)
 INSERT INTO Pais (Nombre) VALUES
-('Bolivia'),
-('Argentina'),
-('Paraguay'),
-('Chile'),
-('Peru'),
-('Brasil');
+('Bolivia'),    -- ID: 1
+('Argentina'),  -- ID: 2
+('Paraguay'),   -- ID: 3
+('Chile'),      -- ID: 4
+('Peru');       -- ID: 5
 GO
 
-/* =========================================================================
-   2. CIUDADES (16 registros - Tarija, provincias y departamentos cercanos)
-   ========================================================================= */
+-- 2. CIUDAD (20 registros: provincias de Tarija, capitales de Bolivia y frontera)
 INSERT INTO Ciudad (Nombre, Pais_ID) VALUES
-('Tarija', 1),                  -- Ciudad_ID = 1
-('Yacuiba', 1),                 -- Ciudad_ID = 2
-('Bermejo', 1),                 -- Ciudad_ID = 3
-('Villamontes', 1),             -- Ciudad_ID = 4
-('San Lorenzo', 1),             -- Ciudad_ID = 5
-('Entre Rios', 1),              -- Ciudad_ID = 6
-('Padcaya', 1),                 -- Ciudad_ID = 7
-('Uriondo (Concepcion)', 1),    -- Ciudad_ID = 8
-('Carapari', 1),                -- Ciudad_ID = 9
-('Sucre', 1),                   -- Ciudad_ID = 10
-('Camargo', 1),                 -- Ciudad_ID = 11
-('Potosi', 1),                  -- Ciudad_ID = 12
-('Tupiza', 1),                  -- Ciudad_ID = 13
-('Villazon', 1),                -- Ciudad_ID = 14
-('Santa Cruz de la Sierra', 1), -- Ciudad_ID = 15
-('Salta', 2);                   -- Ciudad_ID = 16
+('Tarija (Cercado)', 1),           -- ID: 1
+('Yacuiba', 1),                    -- ID: 2
+('Bermejo', 1),                    -- ID: 3
+('Villa Montes', 1),               -- ID: 4
+('San Lorenzo (Mendez)', 1),       -- ID: 5
+('Uriondo (Concepcion)', 1),       -- ID: 6
+('Padcaya', 1),                    -- ID: 7
+('Entre Rios (OConnor)', 1),       -- ID: 8
+('Carapari', 1),                   -- ID: 9
+('El Puente', 1),                  -- ID: 10
+('Yunchara', 1),                   -- ID: 11
+('La Paz', 1),                     -- ID: 12
+('Santa Cruz de la Sierra', 1),    -- ID: 13
+('Cochabamba', 1),                 -- ID: 14
+('Sucre', 1),                      -- ID: 15
+('Potosi', 1),                     -- ID: 16
+('Oruro', 1),                      -- ID: 17
+('Salta', 2),                      -- ID: 18
+('San Salvador de Jujuy', 2),      -- ID: 19
+('Asuncion', 3);                   -- ID: 20
 GO
 
-/* =========================================================================
-   3. DIRECCIONES (30 registros - Puntos reales de Tarija para extracciones y hospitales)
-   ========================================================================= */
+-- 3. DIRECCION (50 registros: hospitales, centros de salud y barrios de Tarija)
 INSERT INTO Direccion (Calle, Ciudad_ID) VALUES
-('Av. Victor Paz Estenssoro s/n - Hospital Regional San Juan de Dios', 1),       -- Direccion_ID = 1
-('Calle Santa Cruz esq. Bolivar - Banco de Sangre Departamental Tarija', 1),     -- Direccion_ID = 2
-('Av. Jaime Paz Zamora Nro. 450 - Hospital Obrero Nro. 7 CNS', 1),               -- Direccion_ID = 3
-('Calle Sucre frente a Plaza Luis de Fuentes y Vargas', 1),                      -- Direccion_ID = 4
-('Av. Las Americas Campus El Tejar - Universidad Juan Misael Saracho', 1),       -- Direccion_ID = 5
-('Calle General Trigo esq. Madrid - Atrio Plaza Principal', 1),                  -- Direccion_ID = 6
-('Av. Integracion esq. Pando - Parque Tematico Tarija', 1),                      -- Direccion_ID = 7
-('Calle Colon entre Madrid y 15 de Abril - Parque Bolivar', 1),                  -- Direccion_ID = 8
-('Calle Colon Nro. 734 - Universidad Catolica Boliviana San Pablo', 1),          -- Direccion_ID = 9
-('Barrio El Molino Calle Corrado Nro. 345 - Clinica CIES', 1),                   -- Direccion_ID = 10
-('Barrio La Pampa Calle Cochabamba Nro. 620 - Clinica San Antonio', 1),          -- Direccion_ID = 11
-('Av. Domingo Paz Nro. 512 - Clinica Prosalud Tarija', 1),                       -- Direccion_ID = 12
-('Barrio Senac Av. Circunvalacion s/n - Centro de Salud Senac', 1),              -- Direccion_ID = 13
-('Barrio San Bernardo Av. Panamericana - Explanada Mercado Campesino', 1),       -- Direccion_ID = 14
-('Barrio Juan XXIII Av. Heroes del Chaco - Coliseo Universitario', 1),           -- Direccion_ID = 15
-('Barrio San Roque Calle General Trigo - Plazuela San Roque', 1),                -- Direccion_ID = 16
-('Barrio Fatima Av. La Paz esq. Belgrano - Parroquia Fatima', 1),                -- Direccion_ID = 17
-('Barrio Las Panosas Calle Mendez - Plazuela Sucre', 1),                         -- Direccion_ID = 18
-('Barrio Tabladita Calle Avaroa s/n - Centro de Salud Tabladita', 1),            -- Direccion_ID = 19
-('Barrio Morros Blancos Av. Fuerza Aerea - Nueva Terminal de Buses', 1),         -- Direccion_ID = 20
-('Barrio Guadalquivir Av. Los Membrillos - Hospital Municipal San Antonio', 1),  -- Direccion_ID = 21
-('Barrio San Geronimo Av. Los Sauces - Posta Sanitaria San Geronimo', 1),        -- Direccion_ID = 22
-('Barrio Palmarcito Av. Circunvalacion Norte - Coliseo Garcia Agreda', 1),       -- Direccion_ID = 23
-('Barrio La Loma de San Juan Calle Virgen de Chaguaya - Mirador La Loma', 1),    -- Direccion_ID = 24
-('Plaza Eustaquio Mendez Acera Norte - Hospital San Lorenzo', 5),                -- Direccion_ID = 25
-('Plaza Principal de Concepcion - Centro de Salud Uriondo', 8),                  -- Direccion_ID = 26
-('Calle Crevaux esq. Comercio - Hospital Ruben Zelaya', 2),                      -- Direccion_ID = 27
-('Av. Petrolera s/n - Hospital Virgen de Chaguaya', 3),                          -- Direccion_ID = 28
-('Calle Capitan Manchego s/n - Hospital Basico Villamontes', 4),                 -- Direccion_ID = 29
-('Calle Bolivar s/n - Hospital San Juan de Dios Entre Rios', 6);                 -- Direccion_ID = 30
+('Av. Potosi Nro 750 - Banco de Sangre de Referencia Departamental Tarija', 1), -- ID: 1
+('Av. Victor Paz Estenssoro s/n - Hospital Regional San Juan de Dios', 1),      -- ID: 2
+('Av. Victor Paz Estenssoro Nro 1240 - Hospital Obrero Nro 7 CNS', 1),          -- ID: 3
+('Calle Gral. Trigo esq. Madrid - Plaza Luis de Fuentes y Vargas', 1),          -- ID: 4
+('Av. Jaime Paz Zamora - Campus Universitario UAJMS El Tejar', 1),              -- ID: 5
+('Calle Bolivar Nro 430 - Clinica Prost', 1),                                   -- ID: 6
+('Calle Santa Cruz Nro 820 - Instituto Oncologico de Tarija', 1),               -- ID: 7
+('Av. La Banda Nro 310 - Centro de Salud Integral San Jorge', 1),               -- ID: 8
+('Calle Sucre Nro 615 - Clinica CIES Tarija', 1),                               -- ID: 9
+('Av. Integracion Nro 1500 - Campo Ferial Multipropósito Fexpo Tarija', 1),     -- ID: 10
+('Calle Cochabamba Nro 945 - Hospital Municipal San Antonio', 1),               -- ID: 11
+('Calle Juan XXIII Nro 210 - Hospital Rubén Zelaya', 2),                        -- ID: 12
+('Av. Petrolera s/n - Hospital Basico de Yacuiba', 2),                          -- ID: 13
+('Av. Bolivar Nro 540 - Hospital Virgen de Chaguaya', 3),                       -- ID: 14
+('Calle Campero esq. Avaroa - Hospital Basico Villa Montes', 4),                -- ID: 15
+('Calle Jurado Nro 120 - Centro de Salud San Lorenzo', 5),                      -- ID: 16
+('Plaza Principal 6 de Agosto s/n - Centro de Salud Concepcion', 6),            -- ID: 17
+('Av. Panamericana Nro 305 - Centro de Salud Padcaya', 7),                      -- ID: 18
+('Calle Comercio Nro 180 - Hospital Basico Entre Rios', 8),                     -- ID: 19
+('Barrio El Molino, Calle Corrado Nro 452', 1),                                 -- ID: 20
+('Barrio Las Panosas, Calle Virginio Lema Nro 318', 1),                         -- ID: 21
+('Barrio San Roque, Calle Fray Manuel Mingo Nro 712', 1),                       -- ID: 22
+('Barrio Senac, Av. Los Ceibos Nro 145', 1),                                    -- ID: 23
+('Barrio Tabladita, Calle Avaroa Nro 1120', 1),                                 -- ID: 24
+('Barrio Juan XXIII, Av. Circunvalacion Nro 890', 1),                           -- ID: 25
+('Barrio Guadalquivir, Calle Los Sauces Nro 234', 1),                           -- ID: 26
+('Barrio Miraflores, Av. Las Americas Nro 670', 1),                             -- ID: 27
+('Barrio Moto Mendez, Calle Eustaquio Mendez Nro 405', 1),                      -- ID: 28
+('Barrio Simon Bolivar, Calle Daniel Campos Nro 990', 1),                       -- ID: 29
+('Barrio La Pampa, Calle Oruro Nro 560', 1),                                    -- ID: 30
+('Barrio Villa Avaroa, Calle Junin Nro 810', 1),                                -- ID: 31
+('Barrio Lourdes, Calle Ballivian Nro 1340', 1),                                -- ID: 32
+('Barrio San Bernardo, Av. Héroes del Chaco Nro 320', 1),                       -- ID: 33
+('Barrio Defensores del Chaco, Calle Boqueron Nro 215', 1),                     -- ID: 34
+('Barrio Aranjuez, Av. Los Parrales Nro 190', 1),                               -- ID: 35
+('Barrio Morros Blancos, Av. Fuerza Aerea Nro 740', 1),                         -- ID: 36
+('Barrio Pedro Antonio Flores, Calle Colon Nro 1105', 1),                       -- ID: 37
+('Barrio Narciso Campero, Calle Ingavi Nro 625', 1),                            -- ID: 38
+('Barrio 4 de Julio, Calle Mendez Arcos Nro 330', 1),                           -- ID: 39
+('Barrio San Geronimo, Av. Costanera del Guadalquivir Nro 510', 1),             -- ID: 40
+('Barrio San Jose, Calle Crevaux Nro 412', 2),                                  -- ID: 41
+('Barrio Lourdes, Av. Santa Cruz Nro 780', 2),                                  -- ID: 42
+('Barrio Azucarero, Calle Tarija Nro 250', 3),                                  -- ID: 43
+('Barrio Ferroviario, Av. Pilcomayo Nro 615', 4),                               -- ID: 44
+('Zona Tomatitas, Av. Principal Nro 140', 5),                                   -- ID: 45
+('Comunidad Calamuchita, Ruta al Valle Nro 85', 6),                             -- ID: 46
+('Zona Sopocachi, Av. 6 de Agosto Nro 2410', 12),                               -- ID: 47
+('Equipetrol Norte, Calle 4 Este Nro 125', 13),                                 -- ID: 48
+('Zona Cala Cala, Av. America Nro 980', 14),                                    -- ID: 49
+('Calle Caseros Nro 650 - Centro Ciudad', 18);                                  -- ID: 50
 GO
 
-/* =========================================================================
-   4. CARGOS (10 registros)
-   ========================================================================= */
-INSERT INTO Cargo (Nombre, Activo) VALUES
-('Medico Hemoterapista', 1),                  -- Cargo_ID = 1
-('Bioquimico Clinico', 1),                    -- Cargo_ID = 2
-('Licenciado en Enfermeria', 1),              -- Cargo_ID = 3
-('Tecnico Flebotomista', 1),                  -- Cargo_ID = 4
-('Especialista en Inmunohematologia', 1),     -- Cargo_ID = 5
-('Responsable de Fraccionamiento', 1),        -- Cargo_ID = 6
-('Encargado de Control de Calidad', 1),       -- Cargo_ID = 7
-('Promotor de Donacion Voluntaria', 1),       -- Cargo_ID = 8
-('Auxiliar de Laboratorio', 1),               -- Cargo_ID = 9
-('Coordinador Medico de Campana Temporal', 0);-- Cargo_ID = 10
-GO
-
-/* =========================================================================
-   5. ENFERMEDADES (16 registros - Cumpliendo el CHECK Gravedad_Nom)
-   ========================================================================= */
-INSERT INTO Enfermedad (Enfermedad, Gravedad) VALUES
-('Enfermedad de Chagas Positivo', 'Rechazo permanente'),       -- Enfermedad_ID = 1
-('Hepatitis B Cronica', 'Rechazo permanente'),                 -- Enfermedad_ID = 2
-('Hepatitis C Positivo', 'Rechazo permanente'),                -- Enfermedad_ID = 3
-('VIH / SIDA', 'Rechazo permanente'),                          -- Enfermedad_ID = 4
-('Resfrio Comun / Estado Gripal', 'Rechazo temporal'),         -- Enfermedad_ID = 5
-('Tatuaje o Piercing Reciente (< 12 meses)', 'Rechazo temporal'), -- Enfermedad_ID = 6
-('Cirugia Menor Reciente', 'Rechazo temporal'),                -- Enfermedad_ID = 7
-('Infeccion Dental con Antibioticos', 'Rechazo temporal'),     -- Enfermedad_ID = 8
-('Embarazo o Lactancia Actual', 'Rechazo temporal'),           -- Enfermedad_ID = 9
-('Hipertension Arterial Controlada', 'Cronica/Sistematica'),   -- Enfermedad_ID = 10
-('Diabetes Mellitus Tipo 1 Insulinodependiente', 'Cronica/Sistematica'), -- Enfermedad_ID = 11
-('Insuficiencia Renal Cronica', 'Cronica/Sistematica'),        -- Enfermedad_ID = 12
-('Cardiopatia Isquemica', 'Cronica/Sistematica'),              -- Enfermedad_ID = 13
-('Anemia Ferropenica (Hemoglobina Baja)', 'TranstornoS&G'),    -- Enfermedad_ID = 14
-('Hemofilia Tipo A', 'TranstornoS&G'),                         -- Enfermedad_ID = 15
-('Trombocitopenia Idiopatica', 'TranstornoS&G');               -- Enfermedad_ID = 16
-GO
-
-/* =========================================================================
-   6. TIPOS DE COMPONENTE (6 registros)
-   ========================================================================= */
-INSERT INTO TipoComponente (TipoComponente, DiasVigencia, CondicionDeAlmacenamiento) VALUES
-('Sangre Total (ST)', 35, 'Refrigeracion de 2 C a 6 C'),                                   -- TipoComponente_ID = 1
-('Concentrado de Globulos Rojos (CGR)', 42, 'Refrigeracion de 2 C a 6 C con solucion aditiva'), -- TipoComponente_ID = 2
-('Plasma Fresco Congelado (PFC)', 365, 'Congelacion inferior a -18 C'),                    -- TipoComponente_ID = 3
-('Concentrado de Plaquetas (CP)', 5, 'Temperatura controlada de 20 C a 24 C en agitacion continua'), -- TipoComponente_ID = 4
-('Crioprecipitado (CRIO)', 365, 'Congelacion inferior a -18 C'),                           -- TipoComponente_ID = 5
-('Globulos Rojos Lavados (GRL)', 1, 'Refrigeracion de 2 C a 6 C (uso inmediato 24h)');     -- TipoComponente_ID = 6
-GO
-
-/* =========================================================================
-   7. PERSONAS (125 registros)
-      - Persona_ID 1 al 35: Personal del Banco de Sangre (35 personas)
-      - Persona_ID 26 al 125: Donantes/Receptores (100 personas)
-      - Nota: Las personas 26 a 35 son TANTO Personal como Donantes/Receptores.
-   ========================================================================= */
+-- 4. PERSONA (90 registros: 1-15 Personal del Banco; 16-90 Donantes y Receptores)
 INSERT INTO Persona (Nombre, ApPaterno, ApMaterno, FechaNacimiento, DocumentoDeIdentidad, Sexo) VALUES
--- 1 a 25: Personal exclusivo
-('Rodrigo', 'Castellanos', 'Trigo', '1980-04-12', '1800101-TJA', 'M'),
-('Maria Fernanda', 'Kohlberg', 'Navajas', '1985-08-23', '1800102-TJA', 'F'),
-('Carlos Alberto', 'Echazu', 'Paz', '1978-11-05', '1800103-TJA', 'M'),
-('Gabriela', 'Vacaflores', 'Avila', '1990-02-14', '1800104-TJA', 'F'),
-('Jorge Luis', 'Baldiviezo', 'Lea Plaza', '1983-07-19', '1800105-TJA', 'M'),
-('Claudia', 'Methfessel', 'Rana', '1988-12-01', '1800106-TJA', 'F'),
-('Fernando', 'Campero', 'Hoyos', '1975-05-30', '1800107-TJA', 'M'),
-('Daniela', 'Gareca', 'Tejerina', '1992-09-17', '1800108-TJA', 'F'),
-('Marcelo', 'Jurado', 'Tolaba', '1987-03-22', '1800109-TJA', 'M'),
-('Valeria', 'Soruco', 'Ruiz', '1994-06-11', '1800110-TJA', 'F'),
-('Gustavo', 'Ontiveros', 'Farfan', '1981-01-25', '1800111-TJA', 'M'),
-('Paola Andrea', 'Darlach', 'Castrillo', '1989-10-08', '1800112-TJA', 'F'),
-('Ramiro', 'Zamora', 'Barrenechea', '1979-04-03', '1800113-TJA', 'M'),
-('Lorena', 'Arce', 'Mogro', '1991-07-29', '1800114-TJA', 'F'),
-('Eduardo', 'Lema', 'Oller', '1984-11-15', '1800115-TJA', 'M'),
-('Silvana', 'Schnorr', 'Aparicio', '1993-02-28', '1800116-TJA', 'F'),
-('Alejandro', 'Calabi', 'Michel', '1986-08-09', '1800117-TJA', 'M'),
-('Micaela', 'Donoso', 'Ichazo', '1995-05-16', '1800118-TJA', 'F'),
-('Javier', 'Pantoja', 'Borda', '1982-12-20', '1800119-TJA', 'M'),
-('Natalia', 'Bacarreza', 'Mendieta', '1990-09-04', '1800120-TJA', 'F'),
-('Oscar', 'Pino', 'Sarmiento', '1977-03-10', '1800121-TJA', 'M'),
-('Veronica', 'Casso', 'Guzman', '1988-06-27', '1800122-TJA', 'F'),
-('Mauricio', 'bluske', 'Morales', '1985-01-13', '1800123-TJA', 'M'),
-('Carolina', 'Rodo', 'Salinas', '1992-04-21', '1800124-TJA', 'F'),
-('Hugo', 'Canedo', 'Pacheco', '1976-10-31', '1800125-TJA', 'M'),
--- 26 a 35: Personal que TAMBIEN es Donante/Receptor
-('Sergio', 'Aguirre', 'Cardozo', '1991-01-18', '1800126-TJA', 'M'),
-('Camila', 'Bejarano', 'Copa', '1994-03-07', '1800127-TJA', 'F'),
-('Diego', 'Vedia', 'Ortega', '1989-07-12', '1800128-TJA', 'M'),
-('Andrea', 'Segovia', 'Gallardo', '1993-11-24', '1800129-TJA', 'F'),
-('Cristian', 'Molina', 'Velasquez', '1987-05-02', '1800130-TJA', 'M'),
-('Lucia', 'Subia', 'Penaloza', '1995-08-19', '1800131-TJA', 'F'),
-('Gonzalo', 'Nieves', 'Romero', '1984-02-06', '1800132-TJA', 'M'),
-('Patricia', 'Zenteno', 'Mamani', '1990-12-14', '1800133-TJA', 'F'),
-('Ruben', 'Choque', 'Condori', '1986-09-28', '1800134-TJA', 'M'),
-('Mariana', 'Cossio', 'Vargas', '1992-06-05', '1800135-TJA', 'F'),
--- 36 a 125: Donantes y Receptores (90 personas adicionales = 100 Donantes/Receptores en total)
-('Juan Pablo', 'Rios', 'Aldana', '1996-02-10', '5010136-TJA', 'M'),
-('Maria Belen', 'Rojas', 'Giron', '1998-05-22', '5010137-TJA', 'F'),
-('Jose Luis', 'Flores', 'Tarifa', '1985-09-14', '5010138-TJA', 'M'),
-('Ana Carola', 'Vargas', 'Mejia', '1993-12-03', '5010139-TJA', 'F'),
-('Marco Antonio', 'Cruz', 'Serrano', '1988-04-17', '5010140-TJA', 'M'),
-('Fabiana', 'Diaz', 'Altamirano', '1999-07-29', '5010141-TJA', 'F'),
-('Luis Fernando', 'Gomez', 'Valdez', '1991-11-11', '5010142-TJA', 'M'),
-('Carla', 'Sanchez', 'humacata', '1995-01-25', '5010143-TJA', 'F'),
-('Pedro', 'Torrez', 'Yucra', '1982-06-08', '5010144-TJA', 'M'),
-('Cecilia', 'Ramirez', 'Soliz', '1997-03-19', '5010145-TJA', 'F'),
-('Miguel Angel', 'Herrera', 'Cuellar', '1984-08-30', '5010146-TJA', 'M'),
-('Ximena', 'Medina', 'Llanos', '1990-10-12', '5010147-TJA', 'F'),
-('Roberto', 'Castro', 'Portal', '1979-02-04', '5010148-TJA', 'M'),
-('Alejandra', 'suarez', 'Garzon', '1996-06-15', '5010149-TJA', 'F'),
-('David', 'Ortega', 'Benitez', '1987-12-27', '5010150-TJA', 'M'),
-('Tatiana', 'Silva', 'Mendoza', '1994-04-09', '5010151-TJA', 'F'),
-('Victor Hugo', 'Nunez', 'cabrera', '1981-07-21', '5010152-TJA', 'M'),
-('Rocio', 'Aguilar', 'Peralta', '2000-01-13', '5010153-TJA', 'F'),
-('alvaro', 'Guerrero', 'Jaramillo', '1992-05-24', '5010154-TJA', 'M'),
-('Noelia', 'Pena', 'Sullca', '1998-09-06', '5010155-TJA', 'F'),
-('Ricardo', 'Salazar', 'Chavez', '1986-03-18', '5010156-TJA', 'M'),
-('Jimena', 'Delgado', 'Tapia', '1991-08-29', '5010157-TJA', 'F'),
-('hector', 'Vega', 'Mariscal', '1983-11-02', '5010158-TJA', 'M'),
-('Wendy', 'Romero', 'Lozano', '1997-02-14', '5010159-TJA', 'F'),
-('Ariel', 'Morales', 'Pantaleon', '1989-06-26', '5010160-TJA', 'M'),
-('Belen', 'Soto', 'Vilca', '2001-10-08', '5010161-TJA', 'F'),
-('Martin', 'Contreras', 'Mendez', '1980-04-20', '5010162-TJA', 'M'),
-('Pamela', 'Luna', 'Carrasco', '1993-07-01', '5010163-TJA', 'F'),
-('Julio Cesar', 'Miranda', 'Espinoza', '1985-12-13', '5010164-TJA', 'M'),
-('Jessica', 'Palacios', 'Zuniga', '1996-03-25', '5010165-TJA', 'F'),
-('Ronald', 'Cortez', 'Alarcon', '1990-08-07', '5010166-TJA', 'M'),
-('Cinthia', 'Bautista', 'Guzman', '1995-11-19', '5010167-TJA', 'F'),
-('Efrain', 'Quispe', 'Mamani', '1982-01-31', '5010168-CHQ', 'M'),
-('Liliana', 'Ponce', 'figueroa', '1999-05-12', '5010169-CHQ', 'F'),
-('Freddy', 'Reyes', 'Arias', '1987-09-23', '5010170-CHQ', 'M'),
-('Mayra', 'Escobar', 'Montero', '1994-12-05', '5010171-PTS', 'F'),
-('Limbert', 'Huanca', 'Colque', '1988-02-16', '5010172-PTS', 'M'),
-('katherine', 'maldonado', 'Soria', '2000-06-28', '5010173-PTS', 'F'),
-('Wilfredo', 'perales', 'Tito', '1981-10-10', '5010174-SCZ', 'M'),
-('Vanesa', 'Acosta', 'Saucedo', '1992-01-22', '5010175-SCZ', 'F'),
-('Edwin', 'padilla', 'Justiniano', '1984-05-04', '5010176-SCZ', 'M'),
-('Nadia', 'Montano', 'Cuellar', '1998-08-15', '5010177-TJA', 'F'),
-('Boris', 'Navarro', 'Urzagaste', '1989-11-27', '5010178-TJA', 'M'),
-('karina', 'Avendano', 'Duran', '1993-03-09', '5010179-TJA', 'F'),
-('Milton', 'Galean', 'Segovia', '1986-07-20', '5010180-TJA', 'M'),
-('Yolanda', 'Coca', 'Vda de Paz', '1978-10-01', '5010181-TJA', 'F'),
-('Rene', 'bustamante', 'Claros', '1991-02-12', '5010182-TJA', 'M'),
-('Sonia', 'Villalba', 'Calvimontes', '1996-05-25', '5010183-TJA', 'F'),
-('ivan', 'Zeballos', 'Ayarde', '1983-09-05', '5010184-TJA', 'M'),
-('Raquel', 'arteaga', 'Llanos', '2001-12-17', '5010185-TJA', 'F'),
-('Grover', 'Apaza', 'Nina', '1985-04-28', '5010186-TJA', 'M'),
-('Sandra', 'valdivia', 'Moscoso', '1990-07-10', '5010187-TJA', 'F'),
-('Franz', 'Ticona', 'huanaco', '1988-10-21', '5010188-TJA', 'M'),
-('Beatriz', 'Murillo', 'Prado', '1995-02-02', '5010189-TJA', 'F'),
-('Bismarck', 'Giron', 'Wayar', '1980-06-14', '5010190-TJA', 'M'),
-('Gladys', 'Paco', 'Huarachi', '1997-09-26', '5010191-TJA', 'F'),
-('Ademar', 'Cuellar', 'Antelo', '1984-01-07', '5010192-TJA', 'M'),
-('Monica', 'Rueda', 'Terceros', '1992-04-19', '5010193-TJA', 'F'),
-('Yamil', 'Caballero', 'Daza', '1989-08-31', '5010194-TJA', 'M'),
-('Tania', 'Velasco', 'Ovando', '1999-11-11', '5010195-TJA', 'F'),
-('Hernan', 'Lizarraga', 'Bellido', '1982-03-23', '5010196-TJA', 'M'),
-('Miriam', 'Choquehuanca', 'Quispe', '1994-06-04', '5010197-TJA', 'F'),
-('jaime', 'Orellana', 'rodriguez', '1987-10-16', '5010198-TJA', 'M'),
-('viviana', 'Lavadenz', 'Kempff', '1991-01-28', '5010199-TJA', 'F'),
-('Elias', 'Cardenas', 'Mollo', '1986-05-09', '5010200-TJA', 'M'),
-('Griselda', 'Paredes', 'Gallo', '1996-08-21', '5010201-TJA', 'F'),
-('Paul', 'Montellano', 'Sanz', '1983-12-02', '5010202-TJA', 'M'),
-('fabiola', 'Salvatierra', 'Vaca', '2000-03-14', '5010203-TJA', 'F'),
-('Dorian', 'Aramayo', 'Zenteno', '1985-07-26', '5010204-TJA', 'M'),
-('Marisol', 'Calizaya', 'Copa', '1993-11-06', '5010205-TJA', 'F'),
-('Kevin', 'Aguilera', 'Banos', '2002-02-18', '5010206-TJA', 'M'),
-('Brenda', 'Paz', 'Estenssoro', '1998-06-30', '5010207-TJA', 'F'),
-('Gaston', 'Lozada', 'Sánchez', '1981-09-11', '5010208-ARG', 'M'),
-('Agustina', 'Cornejo', 'Figueroa', '1995-12-23', '5010209-ARG', 'F'),
-('Edson', 'Barrios', 'Garnica', '1989-04-04', '5010210-TJA', 'M'),
-('Nelly', 'Mendoza', 'Torrez', '1990-08-16', '5010211-TJA', 'F'),
-('Dante', 'Villanueva', 'Cano', '1977-11-28', '5010212-TJA', 'M'),
-('Katerine', 'Abasto', 'Rojas', '1997-03-10', '5010213-TJA', 'F'),
-('Jhonny', 'Condori', 'Alvarez', '1984-06-22', '5010214-TJA', 'M'),
-('Milenka', 'Rivera', 'Costas', '1993-10-03', '5010215-TJA', 'F'),
-('Erick', 'Sanjines', 'Noya', '1991-01-15', '5010216-TJA', 'M'),
-('Denisse', 'Quiroga', 'Crespo', '1996-04-27', '5010217-TJA', 'F'),
-('Ruben Dario', 'Borda', 'Guzman', '1974-08-08', '5010218-TJA', 'M'),
-('Carmen Rosa', 'Arias', 'Vega', '1969-11-19', '5010219-TJA', 'F'),
-('Genaro', 'Mamani', 'Choque', '1971-02-28', '5010220-TJA', 'M'),
-('Marta', 'Salguero', 'Rocha', '1973-05-15', '5010221-TJA', 'F'),
-('Humberto', 'Peredo', 'Galarza', '1968-09-01', '5010222-TJA', 'M'),
-('Teresa', 'Ledezma', 'Crespo', '1972-12-10', '5010223-TJA', 'F'),
-('Arturo', 'Urzagaste', 'Pinto', '1970-03-21', '5010224-TJA', 'M'),
-('Elena', 'Monzon', 'Dalence', '1975-07-04', '5010225-TJA', 'F');
+('Carlos Eduardo', 'Kohlberg', 'Castellanos', '1978-04-12', '1845201-TJA', 'M'),     -- ID: 1
+('Maria Fernanda', 'Navajas', 'Lea Plaza', '1982-09-23', '1890342-TJA', 'F'),        -- ID: 2
+('Rodrigo Javier', 'Trigo', 'Baldiviezo', '1985-01-15', '5012983-TJA', 'M'),         -- ID: 3
+('Valeria Soledad', 'Echazu', 'Paz', '1990-06-30', '7120491-TJA', 'F'),              -- ID: 4
+('Luis Fernando', 'Zamora', 'Raña', '1980-11-08', '1876543-TJA', 'M'),               -- ID: 5
+('Claudia Patricia', 'Avila', 'Tejerina', '1988-03-19', '5049182-TJA', 'F'),         -- ID: 6
+('Jorge Antonio', 'Vacaflores', 'Hoyos', '1983-07-25', '1899204-TJA', 'M'),          -- ID: 7
+('Gabriela Alejandra', 'Gareca', 'Soruco', '1992-12-04', '7189302-TJA', 'F'),        -- ID: 8
+('Marcelo Alejandro', 'Darwich', 'Mogro', '1987-05-14', '5088321-TJA', 'M'),         -- ID: 9
+('Paola Andrea', 'Ruiz', 'Tolaba', '1994-08-21', '7201948-TJA', 'F'),                -- ID: 10
+('Diego Mauricio', 'Jurado', 'Aparicio', '1991-02-10', '7145029-TJA', 'M'),          -- ID: 11
+('Carla Jimena', 'Farfan', 'Copa', '1989-10-17', '5092817-TJA', 'F'),                -- ID: 12
+('Gustavo Adolfo', 'Segovia', 'Ontiveros', '1984-04-03', '1865930-TJA', 'M'),        -- ID: 13
+('Daniela Belen', 'Castrillo', 'Zenteno', '1995-07-29', '7239104-TJA', 'F'),         -- ID: 14
+('Ramiro Hernan', 'Michel', 'Campero', '1979-12-11', '1850293-TJA', 'M'),            -- ID: 15
+('Juan Pablo', 'Castellanos', 'Arce', '1996-03-05', '7250192-TJA', 'M'),             -- ID: 16
+('Lucia Mariana', 'Lea Plaza', 'Mendez', '1998-05-18', '10623819-TJA', 'F'),         -- ID: 17
+('Sergio Andres', 'Baldiviezo', 'Cossio', '1993-11-22', '7190283-TJA', 'M'),         -- ID: 18
+('Camila Victoria', 'Paz', 'Estenssoro', '2000-01-14', '10789201-TJA', 'F'),         -- ID: 19
+('Cristian David', 'Raña', 'Figueroa', '1986-09-09', '5067123-TJA', 'M'),            -- ID: 20
+('Natalia Carolina', 'Tejerina', 'Guzman', '1997-04-27', '7289103-TJA', 'F'),        -- ID: 21
+('Alvaro Sebastian', 'Hoyos', 'Vaca', '1991-08-13', '7156290-TJA', 'M'),             -- ID: 22
+('Fabiana Rocio', 'Soruco', 'Lopez', '1999-02-28', '10691823-TJA', 'F'),             -- ID: 23
+('Oscar Eduardo', 'Mogro', 'Sanchez', '1984-06-16', '5023891-TJA', 'M'),             -- ID: 24
+('Veronica Cecilia', 'Tolaba', 'Choque', '1990-12-01', '7110293-TJA', 'F'),          -- ID: 25
+('Hugo Armando', 'Aparicio', 'Reyes', '1982-03-24', '1889201-TJA', 'M'),             -- ID: 26
+('Adriana Lorena', 'Copa', 'Mamani', '1995-09-15', '7241092-TJA', 'F'),              -- ID: 27
+('Fernando Jose', 'Ontiveros', 'Vargas', '1988-07-07', '5078192-TJA', 'M'),          -- ID: 28
+('Silvana Beatriz', 'Zenteno', 'Flores', '1993-01-30', '7182901-TJA', 'F'),          -- ID: 29
+('Roberto Carlos', 'Campero', 'Ugarte', '1981-05-19', '1870192-TJA', 'M'),           -- ID: 30
+('Mariela Ines', 'Arce', 'Calderon', '1996-10-08', '7267182-TJA', 'F'),              -- ID: 31
+('Julio Cesar', 'Mendez', 'Cardozo', '1989-02-14', '5089102-TJA', 'M'),              -- ID: 32
+('Tatiana Elizabeth', 'Cossio', 'Salazar', '2001-06-21', '10812903-TJA', 'F'),       -- ID: 33
+('Marco Antonio', 'Figueroa', 'Romero', '1987-11-11', '5071892-TJA', 'M'),           -- ID: 34
+('Pamela Alejandra', 'Guzman', 'Pinto', '1994-04-04', '7210928-TJA', 'F'),           -- ID: 35
+('Edgar Rolando', 'Vaca', 'Galean', '1983-08-26', '1892019-TJA', 'M'),               -- ID: 36
+('Lorena Patricia', 'Lopez', 'Velasquez', '1998-12-17', '10651920-TJA', 'F'),        -- ID: 37
+('Victor Hugo', 'Sanchez', 'Ortega', '1992-03-03', '7178291-TJA', 'M'),              -- ID: 38
+('Monica Liliana', 'Choque', 'Condori', '1986-07-23', '5056192-TJA', 'F'),           -- ID: 39
+('Gonzalo Martin', 'Reyes', 'Borda', '1990-01-09', '7102938-TJA', 'M'),              -- ID: 40
+('Cecilia Noemi', 'Mamani', 'Quispe', '1997-05-29', '7290182-TJA', 'F'),             -- ID: 41
+('Ruben Dario', 'Vargas', 'Peralta', '1985-09-12', '5034918-TJA', 'M'),              -- ID: 42
+('Ximena Raquel', 'Flores', 'Aguilar', '2002-02-06', '10890123-TJA', 'F'),           -- ID: 43
+('Pablo Esteban', 'Ugarte', 'Medina', '1991-06-18', '7160291-TJA', 'M'),             -- ID: 44
+('Karina Marisol', 'Calderon', 'Rios', '1989-10-25', '5098123-TJA', 'F'),            -- ID: 45
+('Milton Rene', 'Cardozo', 'Garzon', '1984-01-31', '5019283-TJA', 'M'),              -- ID: 46
+('Vanesa Judith', 'Salazar', 'Molina', '1995-04-15', '7230192-TJA', 'F'),            -- ID: 47
+('Hector Ivan', 'Romero', 'Benitez', '1993-08-08', '7198201-TJA', 'M'),              -- ID: 48
+('Fabiola Carmen', 'Pinto', 'Cabrera', '1999-11-20', '10712938-TJA', 'F'),           -- ID: 49
+('Javier Ernesto', 'Galean', 'Cuellar', '1988-02-27', '5081920-TJA', 'M'),           -- ID: 50
+('Roxana Elizabeth', 'Velasquez', 'Tapia', '1992-07-14', '7180293-TJA', 'F'),        -- ID: 51
+('Miguel Angel', 'Ortega', 'Serrano', '1980-10-02', '1860192-TJA', 'M'),             -- ID: 52
+('Patricia Eugenia', 'Condori', 'Ayala', '1996-01-19', '7259102-TJA', 'F'),          -- ID: 53
+('Alejandro Daniel', 'Borda', 'Padilla', '2000-05-05', '10792019-TJA', 'M'),         -- ID: 54
+('Sandra Marcela', 'Quispe', 'Torrez', '1987-09-28', '5074918-LP', 'F'),             -- ID: 55
+('David Leonardo', 'Peralta', 'Suarez', '1994-12-10', '7219023-SCZ', 'M'),           -- ID: 56
+('carmen Rosa', 'Aguilar', 'Peñaranda', '1983-03-16', '1895012-CHQ', 'F'),           -- ID: 57
+('Jose Luis', 'Medina', 'Llanos', '1991-07-22', '7165920-CBBA', 'M'),                -- ID: 58
+('Leticia Viviana', 'Rios', 'Barrios', '1998-11-03', '10649182-TJA', 'F'),           -- ID: 59
+('Raul Alberto', 'Garzon', 'Nieves', '1986-04-18', '5060192-TJA', 'M'),              -- ID: 60
+('Miriam Gladis', 'Molina', 'humacata', '1965-08-29', '1810293-TJA', 'F'),           -- ID: 61
+('Eduardo Simon', 'Benitez', 'Burgos', '1972-12-12', '1829301-TJA', 'M'),            -- ID: 62
+('Teresa Margarita', 'Cabrera', 'Lema', '1968-02-04', '1819203-TJA', 'F'),           -- ID: 63
+('Mario Alberto', 'Cuellar', 'Sandoval', '1975-06-25', '1834912-TJA', 'M'),          -- ID: 64
+('Elena Victoria', 'Tapia', 'Gutiérrez', '1960-10-15', '1790283-TJA', 'F'),          -- ID: 65
+('Walter Armando', 'Serrano', 'Zeballos', '1970-01-07', '1820194-TJA', 'M'),         -- ID: 66
+('Rosa Maria', 'Ayala', 'Montes', '1981-05-30', '1874920-TJA', 'F'),                 -- ID: 67
+('Arturo Federico', 'Padilla', 'Carrizo', '1977-09-14', '1840192-TJA', 'M'),         -- ID: 68
+('Norma Angelica', 'Torrez', 'Hurtado', '1963-03-21', '1802938-PTS', 'F'),           -- ID: 69
+('Hernan Patricio', 'Suarez', 'Justiniano', '1985-07-08', '5039182-SCZ', 'M'),       -- ID: 70
+('Martha Alicia', 'Peñaranda', 'Daza', '1974-11-19', '1831029-CHQ', 'F'),            -- ID: 71
+('Oscar Mauricio', 'Llanos', 'Villarroel', '1990-04-02', '7108293-ORU', 'M'),        -- ID: 72
+('Beatriz Clara', 'Barrios', 'Abdo', '1988-08-17', '28910293-ARG', 'F'),             -- ID: 73
+('Matias Ezequiel', 'Nieves', 'Ovejero', '1992-12-28', '35102938-ARG', 'M'),         -- ID: 74
+('Silvia Graciela', 'Humacata', 'Valdez', '1979-02-11', '1854920-TJA', 'F'),         -- ID: 75
+('Ricardo Tomas', 'Burgos', 'Cata', '1967-06-06', '1815029-TJA', 'M'),               -- ID: 76
+('Juana Francisca', 'Lema', 'Retamozo', '1971-10-23', '1824910-TJA', 'F'),           -- ID: 77
+('Nelson Ovidio', 'Sandoval', 'Gallardo', '1982-01-15', '1884920-TJA', 'M'),         -- ID: 78
+('Gladys Nelly', 'Gutierrez', 'Colque', '1969-05-09', '1821093-TJA', 'F'),           -- ID: 79
+('Rene Osvaldo', 'Zeballos', 'Maraz', '1976-09-27', '1839102-TJA', 'M'),             -- ID: 80
+('Susana Raquel', 'Montes', 'Ordoñez', '1984-12-14', '5028193-TJA', 'F'),            -- ID: 81
+('bertha Elsa', 'Carrizo', 'Panique', '1962-04-03', '1798201-TJA', 'F'),             -- ID: 82
+('Felix Antenor', 'Hurtado', 'Bejarano', '1958-08-19', '1782910-TJA', 'M'),          -- ID: 83
+('Yolanda Esther', 'Justiniano', 'Añez', '1973-02-25', '1828192-TJA', 'F'),          -- ID: 84
+('Wilfredo Cesar', 'Daza', 'Subia', '1966-07-11', '1812093-TJA', 'M'),               -- ID: 85
+('Sonia Lourdes', 'Villarroel', 'Claros', '1980-11-30', '1864920-TJA', 'F'),         -- ID: 86
+('Armando Efren', 'Abdo', 'Bascope', '1978-03-08', '1843920-TJA', 'M'),              -- ID: 87
+('Olga Cristina', 'Ovejero', 'Palacios', '1964-09-01', '1807192-TJA', 'F'),          -- ID: 88
+('Nicolas Mateo', 'Valdez', 'Irahola', '2004-06-12', '12901823-TJA', 'M'),           -- ID: 89
+('Luciana Sofia', 'Cata', 'Lizarraga', '2005-10-20', '13019283-TJA', 'F');           -- ID: 90
 GO
 
-/* =========================================================================
-   8. EMAILS (140 registros: 125 principales + 15 secundarios laborales)
-   ========================================================================= */
-INSERT INTO Email (DireccionE) VALUES
-('rodrigo.castellanos@bancosangretarija.gob.bo'),
-('mfernanda.kohlberg@bancosangretarija.gob.bo'),
-('carlos.echazu@bancosangretarija.gob.bo'),
-('gabriela.vacaflores@bancosangretarija.gob.bo'),
-('jorge.baldiviezo@bancosangretarija.gob.bo'),
-('claudia.methfessel@bancosangretarija.gob.bo'),
-('fernando.campero@bancosangretarija.gob.bo'),
-('daniela.gareca@bancosangretarija.gob.bo'),
-('marcelo.jurado@bancosangretarija.gob.bo'),
-('valeria.soruco@bancosangretarija.gob.bo'),
-('gustavo.ontiveros@bancosangretarija.gob.bo'),
-('paola.darlach@bancosangretarija.gob.bo'),
-('ramiro.zamora@bancosangretarija.gob.bo'),
-('lorena.arce@bancosangretarija.gob.bo'),
-('eduardo.lema@bancosangretarija.gob.bo'),
-('silvana.schnorr@bancosangretarija.gob.bo'),
-('alejandro.calabi@bancosangretarija.gob.bo'),
-('micaela.donoso@bancosangretarija.gob.bo'),
-('javier.pantoja@bancosangretarija.gob.bo'),
-('natalia.bacarreza@bancosangretarija.gob.bo'),
-('oscar.pino@bancosangretarija.gob.bo'),
-('veronica.casso@bancosangretarija.gob.bo'),
-('mauricio.bluske@bancosangretarija.gob.bo'),
-('carolina.rodo@bancosangretarija.gob.bo'),
-('hugo.canedo@bancosangretarija.gob.bo'),
-('sergio.aguirre@bancosangretarija.gob.bo'),
-('camila.bejarano@bancosangretarija.gob.bo'),
-('diego.vedia@bancosangretarija.gob.bo'),
-('andrea.segovia@bancosangretarija.gob.bo'),
-('cristian.molina@bancosangretarija.gob.bo'),
-('lucia.subia@bancosangretarija.gob.bo'),
-('gonzalo.nieves@bancosangretarija.gob.bo'),
-('patricia.zenteno@bancosangretarija.gob.bo'),
-('ruben.choque@bancosangretarija.gob.bo'),
-('mariana.cossio@bancosangretarija.gob.bo'),
-('juanpablo.rios36@gmail.com'),
-('mbelen.rojas37@gmail.com'),
-('joseluis.flores38@hotmail.com'),
-('anacarola.vargas39@gmail.com'),
-('marco.cruz40@yahoo.com'),
-('fabiana.diaz41@uajms.edu.bo'),
-('luis.gomez42@gmail.com'),
-('carla.sanchez43@gmail.com'),
-('pedro.torrez44@hotmail.com'),
-('cecilia.ramirez45@gmail.com'),
-('miguel.herrera46@gmail.com'),
-('ximena.medina47@ucb.edu.bo'),
-('roberto.castro48@gmail.com'),
-('alejandra.suarez49@gmail.com'),
-('david.ortega50@hotmail.com'),
-('tatiana.silva51@gmail.com'),
-('victor.nunez52@gmail.com'),
-('rocio.aguilar53@uajms.edu.bo'),
-('alvaro.guerrero54@gmail.com'),
-('noelia.pena55@gmail.com'),
-('ricardo.salazar56@hotmail.com'),
-('jimena.delgado57@gmail.com'),
-('hector.vega58@gmail.com'),
-('wendy.romero59@uajms.edu.bo'),
-('ariel.morales60@gmail.com'),
-('belen.soto61@gmail.com'),
-('martin.contreras62@hotmail.com'),
-('pamela.luna63@gmail.com'),
-('juliocesar.miranda64@gmail.com'),
-('jessica.palacios65@ucb.edu.bo'),
-('ronald.cortez66@gmail.com'),
-('cinthia.bautista67@gmail.com'),
-('efrain.quispe68@hotmail.com'),
-('liliana.ponce69@gmail.com'),
-('freddy.reyes70@gmail.com'),
-('mayra.escobar71@gmail.com'),
-('limbert.huanca72@hotmail.com'),
-('katherine.maldonado73@gmail.com'),
-('wilfredo.perales74@gmail.com'),
-('vanesa.acosta75@gmail.com'),
-('edwin.padilla76@hotmail.com'),
-('nadia.montano77@gmail.com'),
-('boris.navarro78@gmail.com'),
-('karina.avendano79@uajms.edu.bo'),
-('milton.galean80@gmail.com'),
-('yolanda.coca81@hotmail.com'),
-('rene.bustamante82@gmail.com'),
-('sonia.villalba83@gmail.com'),
-('ivan.zeballos84@gmail.com'),
-('raquel.arteaga85@uajms.edu.bo'),
-('grover.apaza86@gmail.com'),
-('sandra.valdivia87@hotmail.com'),
-('franz.ticona88@gmail.com'),
-('beatriz.murillo89@gmail.com'),
-('bismarck.giron90@gmail.com'),
-('gladys.paco91@hotmail.com'),
-('ademar.cuellar92@gmail.com'),
-('monica.rueda93@gmail.com'),
-('yamil.caballero94@gmail.com'),
-('tania.velasco95@uajms.edu.bo'),
-('hernan.lizarraga96@gmail.com'),
-('miriam.choquehuanca97@gmail.com'),
-('jaime.orellana98@hotmail.com'),
-('viviana.lavadenz99@gmail.com'),
-('elias.cardenas100@gmail.com'),
-('griselda.paredes101@gmail.com'),
-('paul.montellano102@hotmail.com'),
-('fabiola.salvatierra103@gmail.com'),
-('dorian.aramayo104@gmail.com'),
-('marisol.calizaya105@gmail.com'),
-('kevin.aguilera106@uajms.edu.bo'),
-('brenda.paz107@ucb.edu.bo'),
-('gaston.lozada108@gmail.com'),
-('agustina.cornejo109@gmail.com'),
-('edson.barrios110@hotmail.com'),
-('nelly.mendoza111@gmail.com'),
-('dante.villanueva112@gmail.com'),
-('katerine.abasto113@gmail.com'),
-('jhonny.condori114@hotmail.com'),
-('milenka.rivera115@gmail.com'),
-('erick.sanjines116@gmail.com'),
-('denisse.quiroga117@gmail.com'),
-('rubendario.borda118@hotmail.com'),
-('carmen.arias119@gmail.com'),
-('genaro.mamani120@gmail.com'),
-('marta.salguero121@hotmail.com'),
-('humberto.peredo122@gmail.com'),
-('teresa.ledezma123@gmail.com'),
-('arturo.urzagaste124@hotmail.com'),
-('elena.monzon125@gmail.com'),
--- 15 correos personales secundarios para las primeras 15 personas
-('rodrigo.castellanos.personal@gmail.com'),
-('mfernanda.kohlberg.personal@gmail.com'),
-('carlos.echazu.med@gmail.com'),
-('gaby.vacaflores90@gmail.com'),
-('jorge.baldiviezo83@hotmail.com'),
-('claudia.methfessel@gmail.com'),
-('dr.fernandocampero@gmail.com'),
-('dani.gareca.bio@gmail.com'),
-('marcelo.jurado.tja@gmail.com'),
-('valeria.soruco94@gmail.com'),
-('gustavo.ontiveros81@hotmail.com'),
-('paola.darlach.lab@gmail.com'),
-('ramiro.zamora.tja@gmail.com'),
-('lorena.arce91@gmail.com'),
-('eduardo.lema.salud@gmail.com');
+-- 5. EMAIL (90 registros: formato válido %_@__%.__% y único por persona)
+INSERT INTO Email (Persona_ID, DireccionE, FechaRegistro, Flag) VALUES
+(1, 'ckohlberg.hemato@bancosangretarija.gob.bo', '2024-01-10 08:00:00', 1),
+(2, 'mnavajas.lab@bancosangretarija.gob.bo', '2024-01-10 08:05:00', 1),
+(3, 'rtrigo.fraccionamiento@bancosangretarija.gob.bo', '2024-01-10 08:10:00', 1),
+(4, 'vechazu.serologia@bancosangretarija.gob.bo', '2024-01-10 08:15:00', 1),
+(5, 'lfzamora.calidad@bancosangretarija.gob.bo', '2024-01-10 08:20:00', 1),
+(6, 'cavila.inmuno@bancosangretarija.gob.bo', '2024-01-10 08:25:00', 1),
+(7, 'jvacaflores.hemoterapia@bancosangretarija.gob.bo', '2024-01-10 08:30:00', 1),
+(8, 'ggareca.flebotomia@bancosangretarija.gob.bo', '2024-01-10 08:35:00', 1),
+(9, 'mdarwich.aferesis@bancosangretarija.gob.bo', '2024-01-10 08:40:00', 1),
+(10, 'pruiz.enfermeria@bancosangretarija.gob.bo', '2024-01-10 08:45:00', 1),
+(11, 'djurado.kardex@bancosangretarija.gob.bo', '2024-01-10 08:50:00', 1),
+(12, 'cfarfan.colectas@bancosangretarija.gob.bo', '2024-01-10 08:55:00', 1),
+(13, 'gsegovia.sistemas@bancosangretarija.gob.bo', '2024-01-10 09:00:00', 1),
+(14, 'dcastrillo.recepcion@bancosangretarija.gob.bo', '2024-01-10 09:05:00', 1),
+(15, 'rmichel.direccion@hrsjd-tarija.gob.bo', '2024-01-10 09:10:00', 1),
+(16, 'jpcastellanos96@uajms.edu.bo', '2025-02-01 09:00:00', 1),
+(17, 'lucia.leaplaza@uajms.edu.bo', '2025-02-01 09:15:00', 1),
+(18, 'sergio.baldiviezo@gmail.com', '2025-02-02 10:00:00', 1),
+(19, 'camila.paz2000@uajms.edu.bo', '2025-02-02 10:20:00', 1),
+(20, 'cristian.rana86@hotmail.com', '2025-02-03 11:00:00', 1),
+(21, 'natalia.tejerina@gmail.com', '2025-02-03 11:30:00', 1),
+(22, 'alvaro.hoyos.tja@gmail.com', '2025-02-04 08:45:00', 1),
+(23, 'fabiana.soruco99@uajms.edu.bo', '2025-02-04 09:10:00', 1),
+(24, 'oscar.mogro84@gmail.com', '2025-02-05 10:05:00', 1),
+(25, 'vero.tolaba90@yahoo.com', '2025-02-05 10:40:00', 1),
+(26, 'hugo.aparicio.tja@gmail.com', '2025-02-06 08:30:00', 1),
+(27, 'adriana.copa95@gmail.com', '2025-02-06 09:15:00', 1),
+(28, 'fernando.ontiveros@cosett.com.bo', '2025-02-07 11:00:00', 1),
+(29, 'silvana.zenteno@gmail.com', '2025-02-07 14:20:00', 1),
+(30, 'roberto.campero81@gmail.com', '2025-02-08 08:50:00', 1),
+(31, 'mariela.arce96@uajms.edu.bo', '2025-02-08 09:30:00', 1),
+(32, 'julio.mendez.tja@gmail.com', '2025-02-09 10:15:00', 1),
+(33, 'tatiana.cossio01@uajms.edu.bo', '2025-02-09 11:00:00', 1),
+(34, 'marco.figueroa87@gmail.com', '2025-02-10 08:40:00', 1),
+(35, 'pamela.guzman94@hotmail.com', '2025-02-10 09:25:00', 1),
+(36, 'edgar.vaca.bermejo@gmail.com', '2025-02-11 10:10:00', 1),
+(37, 'lorena.lopez98@uajms.edu.bo', '2025-02-11 11:05:00', 1),
+(38, 'victor.sanchez92@gmail.com', '2025-02-12 08:30:00', 1),
+(39, 'monica.choque86@gmail.com', '2025-02-12 09:45:00', 1),
+(40, 'gonzalo.reyes90@gmail.com', '2025-02-13 10:20:00', 1),
+(41, 'cecilia.mamani97@uajms.edu.bo', '2025-02-13 11:15:00', 1),
+(42, 'ruben.vargas.yacuiba@gmail.com', '2025-02-14 08:50:00', 1),
+(43, 'ximena.flores02@uajms.edu.bo', '2025-02-14 09:30:00', 1),
+(44, 'pablo.ugarte91@gmail.com', '2025-02-15 10:00:00', 1),
+(45, 'karina.calderon89@hotmail.com', '2025-02-15 11:20:00', 1),
+(46, 'milton.cardozo84@gmail.com', '2025-02-16 08:35:00', 1),
+(47, 'vanesa.salazar95@gmail.com', '2025-02-16 09:50:00', 1),
+(48, 'hector.romero93@gmail.com', '2025-02-17 10:30:00', 1),
+(49, 'fabiola.pinto99@uajms.edu.bo', '2025-02-17 11:45:00', 1),
+(50, 'javier.galean88@gmail.com', '2025-02-18 08:15:00', 1),
+(51, 'roxana.velasquez92@gmail.com', '2025-02-18 09:30:00', 1),
+(52, 'miguel.ortega80@gmail.com', '2025-02-19 10:05:00', 1),
+(53, 'patricia.condori96@gmail.com', '2025-02-19 11:10:00', 1),
+(54, 'alejandro.borda00@uajms.edu.bo', '2025-02-20 08:40:00', 1),
+(55, 'sandra.quispe.lp@gmail.com', '2025-02-20 09:55:00', 1),
+(56, 'david.peralta.scz@gmail.com', '2025-02-21 10:25:00', 1),
+(57, 'carmen.aguilar.chq@gmail.com', '2025-02-21 11:30:00', 1),
+(58, 'joseluis.medina.cbba@gmail.com', '2025-02-22 08:50:00', 1),
+(59, 'leticia.rios98@uajms.edu.bo', '2025-02-22 09:40:00', 1),
+(60, 'raul.garzon86@gmail.com', '2025-02-23 10:15:00', 1),
+(61, 'miriam.molina65@gmail.com', '2025-03-01 08:20:00', 1),
+(62, 'eduardo.benitez72@gmail.com', '2025-03-01 09:10:00', 1),
+(63, 'teresa.cabrera68@gmail.com', '2025-03-02 10:00:00', 1),
+(64, 'mario.cuellar75@gmail.com', '2025-03-02 11:05:00', 1),
+(65, 'elena.tapia60@gmail.com', '2025-03-03 08:30:00', 1),
+(66, 'walter.serrano70@gmail.com', '2025-03-03 09:45:00', 1),
+(67, 'rosamaria.ayala81@gmail.com', '2025-03-04 10:20:00', 1),
+(68, 'arturo.padilla77@gmail.com', '2025-03-04 11:15:00', 1),
+(69, 'norma.torrez63@gmail.com', '2025-03-05 08:40:00', 1),
+(70, 'hernan.suarez85@gmail.com', '2025-03-05 09:50:00', 1),
+(71, 'martha.penaranda74@gmail.com', '2025-03-06 10:30:00', 1),
+(72, 'oscar.llanos90@gmail.com', '2025-03-06 11:25:00', 1),
+(73, 'beatriz.barrios.salta@gmail.com.ar', '2025-03-07 08:35:00', 1),
+(74, 'matias.nieves.jujuy@gmail.com.ar', '2025-03-07 09:40:00', 1),
+(75, 'silvia.humacata79@gmail.com', '2025-03-08 10:15:00', 1),
+(76, 'ricardo.burgos67@gmail.com', '2025-03-08 11:10:00', 1),
+(77, 'juana.lema71@gmail.com', '2025-03-09 08:45:00', 1),
+(78, 'nelson.sandoval82@gmail.com', '2025-03-09 09:55:00', 1),
+(79, 'gladys.gutierrez69@gmail.com', '2025-03-10 10:25:00', 1),
+(80, 'rene.zeballos76@gmail.com', '2025-03-10 11:30:00', 1),
+(81, 'susana.montes84@gmail.com', '2025-03-11 08:20:00', 1),
+(82, 'bertha.carrizo62@gmail.com', '2025-03-11 09:15:00', 1),
+(83, 'felix.hurtado58@gmail.com', '2025-03-12 10:05:00', 1),
+(84, 'yolanda.justiniano73@gmail.com', '2025-03-12 11:00:00', 1),
+(85, 'wilfredo.daza66@gmail.com', '2025-03-13 08:50:00', 1),
+(86, 'sonia.villarroel80@gmail.com', '2025-03-13 09:35:00', 1),
+(87, 'armando.abdo78@gmail.com', '2025-03-14 10:20:00', 1),
+(88, 'olga.ovejero64@gmail.com', '2025-03-14 11:15:00', 1),
+(89, 'nicolas.valdez04@uajms.edu.bo', '2025-03-15 08:30:00', 1),
+(90, 'luciana.cata05@uajms.edu.bo', '2025-03-15 09:20:00', 1);
 GO
 
-/* =========================================================================
-   9. EMAIL_PERSONA (140 registros - 1 o máximo 2 correos por persona)
-   ========================================================================= */
-INSERT INTO EmailPersona (Persona_ID, Email_ID, FechaRegistro, Flag) VALUES
-(1, 1, '2023-01-10 08:30:00', 1), (2, 2, '2023-01-10 08:35:00', 1), (3, 3, '2023-01-10 08:40:00', 1),
-(4, 4, '2023-01-10 08:45:00', 1), (5, 5, '2023-01-10 08:50:00', 1), (6, 6, '2023-01-11 09:00:00', 1),
-(7, 7, '2023-01-11 09:10:00', 1), (8, 8, '2023-01-11 09:20:00', 1), (9, 9, '2023-01-11 09:30:00', 1),
-(10, 10, '2023-01-11 09:40:00', 1), (11, 11, '2023-01-12 08:15:00', 1), (12, 12, '2023-01-12 08:25:00', 1),
-(13, 13, '2023-01-12 08:35:00', 1), (14, 14, '2023-01-12 08:45:00', 1), (15, 15, '2023-01-12 08:55:00', 1),
-(16, 16, '2023-01-15 10:00:00', 1), (17, 17, '2023-01-15 10:10:00', 1), (18, 18, '2023-01-15 10:20:00', 1),
-(19, 19, '2023-01-15 10:30:00', 1), (20, 20, '2023-01-15 10:40:00', 1), (21, 21, '2023-01-16 11:00:00', 1),
-(22, 22, '2023-01-16 11:10:00', 1), (23, 23, '2023-01-16 11:20:00', 1), (24, 24, '2023-01-16 11:30:00', 1),
-(25, 25, '2023-01-16 11:40:00', 1), (26, 26, '2023-02-01 08:30:00', 1), (27, 27, '2023-02-01 08:40:00', 1),
-(28, 28, '2023-02-01 08:50:00', 1), (29, 29, '2023-02-01 09:00:00', 1), (30, 30, '2023-02-01 09:10:00', 1),
-(31, 31, '2023-02-02 09:20:00', 1), (32, 32, '2023-02-02 09:30:00', 1), (33, 33, '2023-02-02 09:40:00', 1),
-(34, 34, '2023-02-02 09:50:00', 1), (35, 35, '2023-02-02 10:00:00', 1), (36, 36, '2024-01-05 08:30:00', 1),
-(37, 37, '2024-01-05 09:00:00', 1), (38, 38, '2024-01-06 10:15:00', 1), (39, 39, '2024-01-06 11:00:00', 1),
-(40, 40, '2024-01-07 08:45:00', 1), (41, 41, '2024-01-08 09:20:00', 1), (42, 42, '2024-01-08 10:30:00', 1),
-(43, 43, '2024-01-09 14:10:00', 1), (44, 44, '2024-01-10 08:15:00', 1), (45, 45, '2024-01-10 09:40:00', 1),
-(46, 46, '2024-01-11 10:05:00', 1), (47, 47, '2024-01-12 11:20:00', 1), (48, 48, '2024-01-12 15:00:00', 1),
-(49, 49, '2024-01-13 08:50:00', 1), (50, 50, '2024-01-14 09:10:00', 1), (51, 51, '2024-01-15 10:25:00', 1),
-(52, 52, '2024-01-15 11:45:00', 1), (53, 53, '2024-01-16 08:30:00', 1), (54, 54, '2024-01-17 09:15:00', 1),
-(55, 55, '2024-01-18 10:40:00', 1), (56, 56, '2024-01-19 14:20:00', 1), (57, 57, '2024-01-20 08:10:00', 1),
-(58, 58, '2024-01-21 09:35:00', 1), (59, 59, '2024-01-22 10:50:00', 1), (60, 60, '2024-01-23 11:15:00', 1),
-(61, 61, '2024-02-01 08:20:00', 1), (62, 62, '2024-02-02 09:45:00', 1), (63, 63, '2024-02-03 10:10:00', 1),
-(64, 64, '2024-02-04 11:30:00', 1), (65, 65, '2024-02-05 14:50:00', 1), (66, 66, '2024-02-06 08:25:00', 1),
-(67, 67, '2024-02-07 09:10:00', 1), (68, 68, '2024-02-08 10:35:00', 1), (69, 69, '2024-02-09 11:00:00', 1),
-(70, 70, '2024-02-10 15:15:00', 1), (71, 71, '2024-02-11 08:40:00', 1), (72, 72, '2024-02-12 09:20:00', 1),
-(73, 73, '2024-02-13 10:05:00', 1), (74, 74, '2024-02-14 11:25:00', 1), (75, 75, '2024-02-15 14:40:00', 1),
-(76, 76, '2024-02-16 08:15:00', 1), (77, 77, '2024-02-17 09:30:00', 1), (78, 78, '2024-02-18 10:45:00', 1),
-(79, 79, '2024-02-19 11:10:00', 1), (80, 80, '2024-02-20 15:00:00', 1), (81, 81, '2024-03-01 08:30:00', 1),
-(82, 82, '2024-03-02 09:15:00', 1), (83, 83, '2024-03-03 10:20:00', 1), (84, 84, '2024-03-04 11:40:00', 1),
-(85, 85, '2024-03-05 14:10:00', 1), (86, 86, '2024-03-06 08:50:00', 1), (87, 87, '2024-03-07 09:25:00', 1),
-(88, 88, '2024-03-08 10:30:00', 1), (89, 89, '2024-03-09 11:05:00', 1), (90, 90, '2024-03-10 15:20:00', 1),
-(91, 91, '2024-03-11 08:10:00', 1), (92, 92, '2024-03-12 09:35:00', 1), (93, 93, '2024-03-13 10:50:00', 1),
-(94, 94, '2024-03-14 11:15:00', 1), (95, 95, '2024-03-15 14:30:00', 1), (96, 96, '2024-03-16 08:25:00', 1),
-(97, 97, '2024-03-17 09:40:00', 1), (98, 98, '2024-03-18 10:15:00', 1), (99, 99, '2024-03-19 11:30:00', 1),
-(100, 100, '2024-03-20 14:45:00', 1), (101, 101, '2024-04-01 08:20:00', 1), (102, 102, '2024-04-02 09:10:00', 1),
-(103, 103, '2024-04-03 10:35:00', 1), (104, 104, '2024-04-04 11:00:00', 1), (105, 105, '2024-04-05 15:10:00', 1),
-(106, 106, '2024-04-06 08:45:00', 1), (107, 107, '2024-04-07 09:20:00', 1), (108, 108, '2024-04-08 10:05:00', 1),
-(109, 109, '2024-04-09 11:25:00', 1), (110, 110, '2024-04-10 14:40:00', 1), (111, 111, '2024-04-11 08:15:00', 1),
-(112, 112, '2024-04-12 09:30:00', 1), (113, 113, '2024-04-13 10:45:00', 1), (114, 114, '2024-04-14 11:10:00', 1),
-(115, 115, '2024-04-15 15:00:00', 1), (116, 116, '2024-04-16 08:30:00', 1), (117, 117, '2024-04-17 09:15:00', 1),
-(118, 118, '2024-04-18 10:20:00', 1), (119, 119, '2024-04-19 11:40:00', 1), (120, 120, '2024-04-20 14:10:00', 1),
-(121, 121, '2024-04-21 08:50:00', 1), (122, 122, '2024-04-22 09:25:00', 1), (123, 123, '2024-04-23 10:30:00', 1),
-(124, 124, '2024-04-24 11:05:00', 1), (125, 125, '2024-04-25 15:20:00', 1),
--- Segundo correo para las primeras 15 personas
-(1, 126, '2024-06-01 10:00:00', 1), (2, 127, '2024-06-01 10:05:00', 1), (3, 128, '2024-06-01 10:10:00', 1),
-(4, 129, '2024-06-01 10:15:00', 1), (5, 130, '2024-06-01 10:20:00', 1), (6, 131, '2024-06-01 10:25:00', 1),
-(7, 132, '2024-06-01 10:30:00', 1), (8, 133, '2024-06-01 10:35:00', 1), (9, 134, '2024-06-01 10:40:00', 1),
-(10, 135, '2024-06-01 10:45:00', 1), (11, 136, '2024-06-01 10:50:00', 0), (12, 137, '2024-06-01 10:55:00', 1),
-(13, 138, '2024-06-01 11:00:00', 1), (14, 139, '2024-06-01 11:05:00', 1), (15, 140, '2024-06-01 11:10:00', 1);
+-- 6. TELEFONO (90 registros: prefijos reales de Tarija 729/718/658/466 y +591/+54)
+INSERT INTO Telefono (Persona_ID, numTelefono, CodPais, TipoTelefono, FechaRegistro, Flag) VALUES
+(1, '72981001', '+591', 'Trabajo', '2024-01-10 08:00:00', 1),
+(2, '72981002', '+591', 'Trabajo', '2024-01-10 08:05:00', 1),
+(3, '72981003', '+591', 'Trabajo', '2024-01-10 08:10:00', 1),
+(4, '72981004', '+591', 'Trabajo', '2024-01-10 08:15:00', 1),
+(5, '72981005', '+591', 'Trabajo', '2024-01-10 08:20:00', 1),
+(6, '72981006', '+591', 'Trabajo', '2024-01-10 08:25:00', 1),
+(7, '72981007', '+591', 'Trabajo', '2024-01-10 08:30:00', 1),
+(8, '72981008', '+591', 'Movil', '2024-01-10 08:35:00', 1),
+(9, '72981009', '+591', 'Movil', '2024-01-10 08:40:00', 1),
+(10, '72981010', '+591', 'Movil', '2024-01-10 08:45:00', 1),
+(11, '46642011', '+591', 'Fijo', '2024-01-10 08:50:00', 1),
+(12, '72981012', '+591', 'Movil', '2024-01-10 08:55:00', 1),
+(13, '46642013', '+591', 'Trabajo', '2024-01-10 09:00:00', 1),
+(14, '46642014', '+591', 'Fijo', '2024-01-10 09:05:00', 1),
+(15, '46642015', '+591', 'Emergencia', '2024-01-10 09:10:00', 1),
+(16, '71860016', '+591', 'Movil', '2025-02-01 09:00:00', 1),
+(17, '71860017', '+591', 'Movil', '2025-02-01 09:15:00', 1),
+(18, '71860018', '+591', 'Movil', '2025-02-02 10:00:00', 1),
+(19, '71860019', '+591', 'Movil', '2025-02-02 10:20:00', 1),
+(20, '71860020', '+591', 'Movil', '2025-02-03 11:00:00', 1),
+(21, '71860021', '+591', 'Movil', '2025-02-03 11:30:00', 1),
+(22, '71860022', '+591', 'Movil', '2025-02-04 08:45:00', 1),
+(23, '71860023', '+591', 'Movil', '2025-02-04 09:10:00', 1),
+(24, '71860024', '+591', 'Movil', '2025-02-05 10:05:00', 1),
+(25, '71860025', '+591', 'Movil', '2025-02-05 10:40:00', 1),
+(26, '65820026', '+591', 'Movil', '2025-02-06 08:30:00', 1),
+(27, '65820027', '+591', 'Movil', '2025-02-06 09:15:00', 1),
+(28, '46631028', '+591', 'Fijo', '2025-02-07 11:00:00', 1),
+(29, '65820029', '+591', 'Movil', '2025-02-07 14:20:00', 1),
+(30, '65820030', '+591', 'Movil', '2025-02-08 08:50:00', 1),
+(31, '65820031', '+591', 'Movil', '2025-02-08 09:30:00', 1),
+(32, '65820032', '+591', 'Movil', '2025-02-09 10:15:00', 1),
+(33, '65820033', '+591', 'Movil', '2025-02-09 11:00:00', 1),
+(34, '65820034', '+591', 'Movil', '2025-02-10 08:40:00', 1),
+(35, '65820035', '+591', 'Movil', '2025-02-10 09:25:00', 1),
+(36, '46972036', '+591', 'Fijo', '2025-02-11 10:10:00', 1),
+(37, '76180037', '+591', 'Movil', '2025-02-11 11:05:00', 1),
+(38, '76180038', '+591', 'Movil', '2025-02-12 08:30:00', 1),
+(39, '76180039', '+591', 'Movil', '2025-02-12 09:45:00', 1),
+(40, '76180040', '+591', 'Movil', '2025-02-13 10:20:00', 1),
+(41, '76180041', '+591', 'Movil', '2025-02-13 11:15:00', 1),
+(42, '46822042', '+591', 'Fijo', '2025-02-14 08:50:00', 1),
+(43, '76180043', '+591', 'Movil', '2025-02-14 09:30:00', 1),
+(44, '76180044', '+591', 'Movil', '2025-02-15 10:00:00', 1),
+(45, '76180045', '+591', 'Movil', '2025-02-15 11:20:00', 1),
+(46, '72990046', '+591', 'Movil', '2025-02-16 08:35:00', 1),
+(47, '72990047', '+591', 'Movil', '2025-02-16 09:50:00', 1),
+(48, '72990048', '+591', 'Movil', '2025-02-17 10:30:00', 1),
+(49, '72990049', '+591', 'Movil', '2025-02-17 11:45:00', 1),
+(50, '72990050', '+591', 'Movil', '2025-02-18 08:15:00', 1),
+(51, '72990051', '+591', 'Movil', '2025-02-18 09:30:00', 1),
+(52, '72990052', '+591', 'Movil', '2025-02-19 10:05:00', 1),
+(53, '72990053', '+591', 'Movil', '2025-02-19 11:10:00', 1),
+(54, '72990054', '+591', 'Movil', '2025-02-20 08:40:00', 1),
+(55, '71540055', '+591', 'Movil', '2025-02-20 09:55:00', 1),
+(56, '70830056', '+591', 'Movil', '2025-02-21 10:25:00', 1),
+(57, '72870057', '+591', 'Movil', '2025-02-21 11:30:00', 1),
+(58, '70710058', '+591', 'Movil', '2025-02-22 08:50:00', 1),
+(59, '72990059', '+591', 'Movil', '2025-02-22 09:40:00', 1),
+(60, '72990060', '+591', 'Movil', '2025-02-23 10:15:00', 1),
+(61, '71860061', '+591', 'Emergencia', '2025-03-01 08:20:00', 1),
+(62, '71860062', '+591', 'Emergencia', '2025-03-01 09:10:00', 1),
+(63, '46650063', '+591', 'Fijo', '2025-03-02 10:00:00', 1),
+(64, '71860064', '+591', 'Emergencia', '2025-03-02 11:05:00', 1),
+(65, '46650065', '+591', 'Fijo', '2025-03-03 08:30:00', 1),
+(66, '71860066', '+591', 'Emergencia', '2025-03-03 09:45:00', 1),
+(67, '71860067', '+591', 'Movil', '2025-03-04 10:20:00', 1),
+(68, '71860068', '+591', 'Movil', '2025-03-04 11:15:00', 1),
+(69, '71860069', '+591', 'Emergencia', '2025-03-05 08:40:00', 1),
+(70, '71860070', '+591', 'Movil', '2025-03-05 09:50:00', 1),
+(71, '71860071', '+591', 'Movil', '2025-03-06 10:30:00', 1),
+(72, '71860072', '+591', 'Movil', '2025-03-06 11:25:00', 1),
+(73, '3874500073', '+54', 'Movil', '2025-03-07 08:35:00', 1),
+(74, '3884200074', '+54', 'Movil', '2025-03-07 09:40:00', 1),
+(75, '65830075', '+591', 'Movil', '2025-03-08 10:15:00', 1),
+(76, '65830076', '+591', 'Emergencia', '2025-03-08 11:10:00', 1),
+(77, '65830077', '+591', 'Emergencia', '2025-03-09 08:45:00', 1),
+(78, '65830078', '+591', 'Movil', '2025-03-09 09:55:00', 1),
+(79, '46650079', '+591', 'Fijo', '2025-03-10 10:25:00', 1),
+(80, '65830080', '+591', 'Emergencia', '2025-03-10 11:30:00', 1),
+(81, '65830081', '+591', 'Movil', '2025-03-11 08:20:00', 1),
+(82, '46650082', '+591', 'Fijo', '2025-03-11 09:15:00', 1),
+(83, '46650083', '+591', 'Emergencia', '2025-03-12 10:05:00', 1),
+(84, '65830084', '+591', 'Movil', '2025-03-12 11:00:00', 1),
+(85, '65830085', '+591', 'Emergencia', '2025-03-13 08:50:00', 1),
+(86, '65830086', '+591', 'Movil', '2025-03-13 09:35:00', 1),
+(87, '65830087', '+591', 'Movil', '2025-03-14 10:20:00', 1),
+(88, '46650088', '+591', 'Fijo', '2025-03-14 11:15:00', 1),
+(89, '65830089', '+591', 'Movil', '2025-03-15 08:30:00', 1),
+(90, '65830090', '+591', 'Movil', '2025-03-15 09:20:00', 1);
 GO
 
-/* =========================================================================
-   10. TELEFONOS (145 registros: 125 celulares + 20 fijos de Tarija 466-XXXXX)
-   ========================================================================= */
-INSERT INTO Telefono (numTelefono, CodPais, TipoTelefono) VALUES
-('72980101', '+591', 'Celular'), ('72980102', '+591', 'Celular'), ('72980103', '+591', 'Celular'),
-('72980104', '+591', 'Celular'), ('72980105', '+591', 'Celular'), ('72980106', '+591', 'Celular'),
-('72980107', '+591', 'Celular'), ('72980108', '+591', 'Celular'), ('72980109', '+591', 'Celular'),
-('72980110', '+591', 'Celular'), ('72980111', '+591', 'Celular'), ('72980112', '+591', 'Celular'),
-('72980113', '+591', 'Celular'), ('72980114', '+591', 'Celular'), ('72980115', '+591', 'Celular'),
-('72980116', '+591', 'Celular'), ('72980117', '+591', 'Celular'), ('72980118', '+591', 'Celular'),
-('72980119', '+591', 'Celular'), ('72980120', '+591', 'Celular'), ('72980121', '+591', 'Celular'),
-('72980122', '+591', 'Celular'), ('72980123', '+591', 'Celular'), ('72980124', '+591', 'Celular'),
-('72980125', '+591', 'Celular'), ('72980126', '+591', 'Celular'), ('72980127', '+591', 'Celular'),
-('72980128', '+591', 'Celular'), ('72980129', '+591', 'Celular'), ('72980130', '+591', 'Celular'),
-('72980131', '+591', 'Celular'), ('72980132', '+591', 'Celular'), ('72980133', '+591', 'Celular'),
-('72980134', '+591', 'Celular'), ('72980135', '+591', 'Celular'), ('71860136', '+591', 'Celular'),
-('71860137', '+591', 'Celular'), ('71860138', '+591', 'Celular'), ('71860139', '+591', 'Celular'),
-('71860140', '+591', 'Celular'), ('71860141', '+591', 'Celular'), ('71860142', '+591', 'Celular'),
-('71860143', '+591', 'Celular'), ('71860144', '+591', 'Celular'), ('71860145', '+591', 'Celular'),
-('71860146', '+591', 'Celular'), ('71860147', '+591', 'Celular'), ('71860148', '+591', 'Celular'),
-('71860149', '+591', 'Celular'), ('71860150', '+591', 'Celular'), ('71860151', '+591', 'Celular'),
-('71860152', '+591', 'Celular'), ('71860153', '+591', 'Celular'), ('71860154', '+591', 'Celular'),
-('71860155', '+591', 'Celular'), ('71860156', '+591', 'Celular'), ('71860157', '+591', 'Celular'),
-('71860158', '+591', 'Celular'), ('71860159', '+591', 'Celular'), ('71860160', '+591', 'Celular'),
-('65820161', '+591', 'Celular'), ('65820162', '+591', 'Celular'), ('65820163', '+591', 'Celular'),
-('65820164', '+591', 'Celular'), ('65820165', '+591', 'Celular'), ('65820166', '+591', 'Celular'),
-('65820167', '+591', 'Celular'), ('65820168', '+591', 'Celular'), ('65820169', '+591', 'Celular'),
-('65820170', '+591', 'Celular'), ('65820171', '+591', 'Celular'), ('65820172', '+591', 'Celular'),
-('65820173', '+591', 'Celular'), ('65820174', '+591', 'Celular'), ('65820175', '+591', 'Celular'),
-('65820176', '+591', 'Celular'), ('65820177', '+591', 'Celular'), ('65820178', '+591', 'Celular'),
-('65820179', '+591', 'Celular'), ('65820180', '+591', 'Celular'), ('65820181', '+591', 'Celular'),
-('65820182', '+591', 'Celular'), ('65820183', '+591', 'Celular'), ('65820184', '+591', 'Celular'),
-('65820185', '+591', 'Celular'), ('65820186', '+591', 'Celular'), ('65820187', '+591', 'Celular'),
-('65820188', '+591', 'Celular'), ('65820189', '+591', 'Celular'), ('65820190', '+591', 'Celular'),
-('76190191', '+591', 'Celular'), ('76190192', '+591', 'Celular'), ('76190193', '+591', 'Celular'),
-('76190194', '+591', 'Celular'), ('76190195', '+591', 'Celular'), ('76190196', '+591', 'Celular'),
-('76190197', '+591', 'Celular'), ('76190198', '+591', 'Celular'), ('76190199', '+591', 'Celular'),
-('76190200', '+591', 'Celular'), ('76190201', '+591', 'Celular'), ('76190202', '+591', 'Celular'),
-('76190203', '+591', 'Celular'), ('76190204', '+591', 'Celular'), ('76190205', '+591', 'Celular'),
-('76190206', '+591', 'Celular'), ('76190207', '+591', 'Celular'), ('387540208', '+54', 'Celular'),
-('387540209', '+54', 'Celular'), ('76190210', '+591', 'Celular'), ('76190211', '+591', 'Celular'),
-('76190212', '+591', 'Celular'), ('76190213', '+591', 'Celular'), ('76190214', '+591', 'Celular'),
-('76190215', '+591', 'Celular'), ('76190216', '+591', 'Celular'), ('76190217', '+591', 'Celular'),
-('76190218', '+591', 'Celular'), ('76190219', '+591', 'Celular'), ('76190220', '+591', 'Celular'),
-('76190221', '+591', 'Celular'), ('76190222', '+591', 'Celular'), ('76190223', '+591', 'Celular'),
-('76190224', '+591', 'Celular'), ('76190225', '+591', 'Celular'),
--- 20 Teléfonos Fijos de Tarija (Código 466-XXXXX)
-('46642101', '+591', 'Fijo Domicilio'), ('46642102', '+591', 'Fijo Domicilio'),
-('46642103', '+591', 'Fijo Consultorio'), ('46642104', '+591', 'Fijo Domicilio'),
-('46642105', '+591', 'Fijo Domicilio'), ('46642106', '+591', 'Fijo Domicilio'),
-('46642107', '+591', 'Fijo Consultorio'), ('46642108', '+591', 'Fijo Domicilio'),
-('46642109', '+591', 'Fijo Domicilio'), ('46642110', '+591', 'Fijo Domicilio'),
-('46643201', '+591', 'Fijo Domicilio'), ('46643202', '+591', 'Fijo Domicilio'),
-('46643203', '+591', 'Fijo Trabajo'), ('46643204', '+591', 'Fijo Domicilio'),
-('46643205', '+591', 'Fijo Domicilio'), ('46643206', '+591', 'Fijo Trabajo'),
-('46643207', '+591', 'Fijo Domicilio'), ('46643208', '+591', 'Fijo Domicilio'),
-('46643209', '+591', 'Fijo Domicilio'), ('46643210', '+591', 'Fijo Domicilio');
+-- 7. CARGO (12 registros: organigrama funcional de un Banco de Sangre de Referencia)
+INSERT INTO Cargo (Nombre, Activo) VALUES
+('Medico Hematologo y Hemoterapista Jefe', 1),                     -- ID: 1
+('Bioquimico Jefe de Inmunohematologia', 1),                       -- ID: 2
+('Bioquimico Especialista en Fraccionamiento Sanguineo', 1),       -- ID: 3
+('Bioquimico de Tamizaje Serologico y Biologia Molecular', 1),     -- ID: 4
+('Bioquimico Responsable de Control de Calidad', 1),               -- ID: 5
+('Bioquimico de Pruebas Cruzadas y Medicina Transfusional', 1),    -- ID: 6
+('Tecnico Superior en Hemoterapia y Flebotomia', 1),               -- ID: 7
+('Licenciado en Enfermeria Especialista en Aferesis', 1),          -- ID: 8
+('Licenciado en Enfermeria de Seleccion Predonacion', 1),          -- ID: 9
+('Promotor de Donacion Voluntaria y Colectas Moviles', 1),         -- ID: 10
+('Encargado de Kardex, Cadena de Frio y Despacho', 1),             -- ID: 11
+('Auxiliar de Esterilizacion y Bioseguridad', 0);                  -- ID: 12
 GO
 
-/* =========================================================================
-   11. PERSONA_TELEFONO (145 registros - 1 o máximo 2 teléfonos por persona)
-   ========================================================================= */
-INSERT INTO PersonaTelefono (Persona_ID, Telefono_ID, FechaRegistro, Flag) VALUES
-(1, 1, '2023-01-10 08:30:00', 1), (2, 2, '2023-01-10 08:35:00', 1), (3, 3, '2023-01-10 08:40:00', 1),
-(4, 4, '2023-01-10 08:45:00', 1), (5, 5, '2023-01-10 08:50:00', 1), (6, 6, '2023-01-11 09:00:00', 1),
-(7, 7, '2023-01-11 09:10:00', 1), (8, 8, '2023-01-11 09:20:00', 1), (9, 9, '2023-01-11 09:30:00', 1),
-(10, 10, '2023-01-11 09:40:00', 1), (11, 11, '2023-01-12 08:15:00', 1), (12, 12, '2023-01-12 08:25:00', 1),
-(13, 13, '2023-01-12 08:35:00', 1), (14, 14, '2023-01-12 08:45:00', 1), (15, 15, '2023-01-12 08:55:00', 1),
-(16, 16, '2023-01-15 10:00:00', 1), (17, 17, '2023-01-15 10:10:00', 1), (18, 18, '2023-01-15 10:20:00', 1),
-(19, 19, '2023-01-15 10:30:00', 1), (20, 20, '2023-01-15 10:40:00', 1), (21, 21, '2023-01-16 11:00:00', 1),
-(22, 22, '2023-01-16 11:10:00', 1), (23, 23, '2023-01-16 11:20:00', 1), (24, 24, '2023-01-16 11:30:00', 1),
-(25, 25, '2023-01-16 11:40:00', 1), (26, 26, '2023-02-01 08:30:00', 1), (27, 27, '2023-02-01 08:40:00', 1),
-(28, 28, '2023-02-01 08:50:00', 1), (29, 29, '2023-02-01 09:00:00', 1), (30, 30, '2023-02-01 09:10:00', 1),
-(31, 31, '2023-02-02 09:20:00', 1), (32, 32, '2023-02-02 09:30:00', 1), (33, 33, '2023-02-02 09:40:00', 1),
-(34, 34, '2023-02-02 09:50:00', 1), (35, 35, '2023-02-02 10:00:00', 1), (36, 36, '2024-01-05 08:30:00', 1),
-(37, 37, '2024-01-05 09:00:00', 1), (38, 38, '2024-01-06 10:15:00', 1), (39, 39, '2024-01-06 11:00:00', 1),
-(40, 40, '2024-01-07 08:45:00', 1), (41, 41, '2024-01-08 09:20:00', 1), (42, 42, '2024-01-08 10:30:00', 1),
-(43, 43, '2024-01-09 14:10:00', 1), (44, 44, '2024-01-10 08:15:00', 1), (45, 45, '2024-01-10 09:40:00', 1),
-(46, 46, '2024-01-11 10:05:00', 1), (47, 47, '2024-01-12 11:20:00', 1), (48, 48, '2024-01-12 15:00:00', 1),
-(49, 49, '2024-01-13 08:50:00', 1), (50, 50, '2024-01-14 09:10:00', 1), (51, 51, '2024-01-15 10:25:00', 1),
-(52, 52, '2024-01-15 11:45:00', 1), (53, 53, '2024-01-16 08:30:00', 1), (54, 54, '2024-01-17 09:15:00', 1),
-(55, 55, '2024-01-18 10:40:00', 1), (56, 56, '2024-01-19 14:20:00', 1), (57, 57, '2024-01-20 08:10:00', 1),
-(58, 58, '2024-01-21 09:35:00', 1), (59, 59, '2024-01-22 10:50:00', 1), (60, 60, '2024-01-23 11:15:00', 1),
-(61, 61, '2024-02-01 08:20:00', 1), (62, 62, '2024-02-02 09:45:00', 1), (63, 63, '2024-02-03 10:10:00', 1),
-(64, 64, '2024-02-04 11:30:00', 1), (65, 65, '2024-02-05 14:50:00', 1), (66, 66, '2024-02-06 08:25:00', 1),
-(67, 67, '2024-02-07 09:10:00', 1), (68, 68, '2024-02-08 10:35:00', 1), (69, 69, '2024-02-09 11:00:00', 1),
-(70, 70, '2024-02-10 15:15:00', 1), (71, 71, '2024-02-11 08:40:00', 1), (72, 72, '2024-02-12 09:20:00', 1),
-(73, 73, '2024-02-13 10:05:00', 1), (74, 74, '2024-02-14 11:25:00', 1), (75, 75, '2024-02-15 14:40:00', 1),
-(76, 76, '2024-02-16 08:15:00', 1), (77, 77, '2024-02-17 09:30:00', 1), (78, 78, '2024-02-18 10:45:00', 1),
-(79, 79, '2024-02-19 11:10:00', 1), (80, 80, '2024-02-20 15:00:00', 1), (81, 81, '2024-03-01 08:30:00', 1),
-(82, 82, '2024-03-02 09:15:00', 1), (83, 83, '2024-03-03 10:20:00', 1), (84, 84, '2024-03-04 11:40:00', 1),
-(85, 85, '2024-03-05 14:10:00', 1), (86, 86, '2024-03-06 08:50:00', 1), (87, 87, '2024-03-07 09:25:00', 1),
-(88, 88, '2024-03-08 10:30:00', 1), (89, 89, '2024-03-09 11:05:00', 1), (90, 90, '2024-03-10 15:20:00', 1),
-(91, 91, '2024-03-11 08:10:00', 1), (92, 92, '2024-03-12 09:35:00', 1), (93, 93, '2024-03-13 10:50:00', 1),
-(94, 94, '2024-03-14 11:15:00', 1), (95, 95, '2024-03-15 14:30:00', 1), (96, 96, '2024-03-16 08:25:00', 1),
-(97, 97, '2024-03-17 09:40:00', 1), (98, 98, '2024-03-18 10:15:00', 1), (99, 99, '2024-03-19 11:30:00', 1),
-(100, 100, '2024-03-20 14:45:00', 1), (101, 101, '2024-04-01 08:20:00', 1), (102, 102, '2024-04-02 09:10:00', 1),
-(103, 103, '2024-04-03 10:35:00', 1), (104, 104, '2024-04-04 11:00:00', 1), (105, 105, '2024-04-05 15:10:00', 1),
-(106, 106, '2024-04-06 08:45:00', 1), (107, 107, '2024-04-07 09:20:00', 1), (108, 108, '2024-04-08 10:05:00', 1),
-(109, 109, '2024-04-09 11:25:00', 1), (110, 110, '2024-04-10 14:40:00', 1), (111, 111, '2024-04-11 08:15:00', 1),
-(112, 112, '2024-04-12 09:30:00', 1), (113, 113, '2024-04-13 10:45:00', 1), (114, 114, '2024-04-14 11:10:00', 1),
-(115, 115, '2024-04-15 15:00:00', 1), (116, 116, '2024-04-16 08:30:00', 1), (117, 117, '2024-04-17 09:15:00', 1),
-(118, 118, '2024-04-18 10:20:00', 1), (119, 119, '2024-04-19 11:40:00', 1), (120, 120, '2024-04-20 14:10:00', 1),
-(121, 121, '2024-04-21 08:50:00', 1), (122, 122, '2024-04-22 09:25:00', 1), (123, 123, '2024-04-23 10:30:00', 1),
-(124, 124, '2024-04-24 11:05:00', 1), (125, 125, '2024-04-25 15:20:00', 1),
--- Teléfono fijo secundario para 20 personas
-(1, 126, '2024-05-10 09:00:00', 1), (2, 127, '2024-05-10 09:05:00', 1), (3, 128, '2024-05-10 09:10:00', 1),
-(4, 129, '2024-05-10 09:15:00', 1), (5, 130, '2024-05-10 09:20:00', 1), (6, 131, '2024-05-10 09:25:00', 1),
-(7, 132, '2024-05-10 09:30:00', 1), (8, 133, '2024-05-10 09:35:00', 1), (9, 134, '2024-05-10 09:40:00', 1),
-(10, 135, '2024-05-10 09:45:00', 1), (36, 136, '2024-05-12 10:00:00', 1), (37, 137, '2024-05-12 10:05:00', 1),
-(38, 138, '2024-05-12 10:10:00', 1), (39, 139, '2024-05-12 10:15:00', 1), (40, 140, '2024-05-12 10:20:00', 1),
-(41, 141, '2024-05-12 10:25:00', 1), (42, 142, '2024-05-12 10:30:00', 1), (43, 143, '2024-05-12 10:35:00', 1),
-(44, 144, '2024-05-12 10:40:00', 1), (45, 145, '2024-05-12 10:45:00', 1);
+-- 8. ENFERMEDAD (25 registros: patologías de tamizaje y diferimiento en Tarija/Bolivia)
+-- CHECK: Gravedad IN ('Rechazo permanente','Rechazo temporal','Cronica/Sistematica','TranstornoS&G')
+INSERT INTO Enfermedad (Enfermedad, Gravedad) VALUES
+('Enfermedad de Chagas (Trypanosoma cruzi Reactivo)', 'Rechazo permanente'),       -- ID: 1
+('Infeccion por VIH 1/2 (ELISA/Quimioluminiscencia)', 'Rechazo permanente'),       -- ID: 2
+('Hepatitis B Cronica (HBsAg y Anti-HBc Reactivo)', 'Rechazo permanente'),         -- ID: 3
+('Hepatitis C (Anti-VHC Reactivo)', 'Rechazo permanente'),                         -- ID: 4
+('Sifilis Activa (Treponema pallidum RPR/ELISA Reactivo)', 'Rechazo permanente'),  -- ID: 5
+('Infeccion por Virus Linfotropico HTLV I/II', 'Rechazo permanente'),              -- ID: 6
+('Antecedente de Neoplasia Maligna Hematologica', 'Rechazo permanente'),           -- ID: 7
+('Dengue Clasico Reciente (< 6 meses en Bermejo/Yacuiba)', 'Rechazo temporal'),    -- ID: 8
+('Malaria / Paludismo Tratado (< 12 meses)', 'Rechazo temporal'),                  -- ID: 9
+('Tatuaje, Piercing o Acupuntura Reciente (< 12 meses)', 'Rechazo temporal'),      -- ID: 10
+('Embarazo en Curso o Lactancia Materna (< 6 meses)', 'Rechazo temporal'),         -- ID: 11
+('Tratamiento Antibiotico Agudo (< 14 dias)', 'Rechazo temporal'),                 -- ID: 12
+('Cirugia Mayor o Endoscopia Reciente (< 6 meses)', 'Rechazo temporal'),           -- ID: 13
+('Extraccion Dental sin Complicaciones (< 7 dias)', 'Rechazo temporal'),           -- ID: 14
+('Hipertension Arterial Sistemica Descompensada', 'Cronica/Sistematica'),          -- ID: 15
+('Diabetes Mellitus Tipo 1 Insulinodependiente', 'Cronica/Sistematica'),           -- ID: 16
+('Insuficiencia Renal Cronica en Hemodialisis', 'Cronica/Sistematica'),            -- ID: 17
+('Cardiopatia Chagasica Cronica Dilatada', 'Cronica/Sistematica'),                 -- ID: 18
+('Cirrosis Hepatica e Hipertension Portal', 'Cronica/Sistematica'),                -- ID: 19
+('Anemia Ferropenica Severa Sintomatica', 'TranstornoS&G'),                        -- ID: 20
+('Hemofilia A (Deficit Congenito de Factor VIII)', 'TranstornoS&G'),               -- ID: 21
+('Enfermedad de von Willebrand Tipo II', 'TranstornoS&G'),                         -- ID: 22
+('Purpura Trombocitopenica Inmune (PTI)', 'TranstornoS&G'),                        -- ID: 23
+('Policitemia Vera / Eritrocitosis Patologica', 'TranstornoS&G'),                  -- ID: 24
+('Coagulopatia Intravascular Diseminada (CID)', 'TranstornoS&G');                  -- ID: 25
 GO
 
-/* =========================================================================
-   12. PERSONAL (35 registros: 30 activos + 5 con contrato finalizado)
-       Cumple el CHECK Actividad: (Activo=1 AND FechaFin IS NULL) OR (Activo=0 AND FechaFin IS NOT NULL)
-   ========================================================================= */
+-- 9. TIPOCOMPONENTE (10 registros: hemocomponentes primarios y de sub-fraccionamiento)
+INSERT INTO TipoComponente (TipoComponente, DiasVigencia, CondicionDeAlmacenamiento) VALUES
+('Sangre Total (ST - Unidad Madre)', 35, 'Refrigeracion de 2°C a 6°C (previo a fraccionamiento < 8h)'),  -- ID: 1
+('Concentrado de Eritrocitos (CE en SAG-Manitol)', 42, 'Refrigeracion controlada de 2°C a 6°C'),         -- ID: 2
+('Concentrado de Eritrocitos Leucorreducido (CEL)', 42, 'Refrigeracion controlada de 2°C a 6°C'),        -- ID: 3
+('Plasma Fresco Congelado (PFC)', 365, 'Ultracongelacion de -18°C a -30°C'),                             -- ID: 4
+('Concentrado de Plaquetas Estandar (CPE Buffy Coat)', 5, '20°C a 24°C en agitacion horizontal continua'),-- ID: 5
+('Concentrado de Plaquetas por Aferesis (CPA)', 5, '20°C a 24°C en agitacion horizontal continua'),      -- ID: 6
+('Crioprecipitado Rico en Factor VIII y Fibrinogeno (CRIO)', 365, 'Ultracongelacion de -18°C a -30°C'),  -- ID: 7
+('Plasma Libre de Crioprecipitado (PLC / Sobrenadante)', 365, 'Ultracongelacion de -18°C a -30°C'),      -- ID: 8
+('Alicuota Pediatrica de Eritrocitos (APE Neonatal)', 35, 'Refrigeracion de 2°C a 6°C (circuito cerrado)'),-- ID: 9
+('Concentrado de Eritrocitos Lavados (CELV)', 1, 'Refrigeracion de 2°C a 6°C (uso maximo en 24 horas)'); -- ID: 10
+GO
+
+-- 10. PERSONAL (16 registros: cumple CHECK de Activo y FechaFin)
 INSERT INTO Personal (Persona_ID, Cargo_ID, FechaInicio, FechaFin, Activo) VALUES
-(1, 1, '2018-03-01', NULL, 1),
-(2, 2, '2019-05-15', NULL, 1),
-(3, 1, '2017-08-10', NULL, 1),
-(4, 3, '2020-02-01', NULL, 1),
-(5, 4, '2020-06-20', NULL, 1),
-(6, 5, '2019-11-11', NULL, 1),
-(7, 6, '2018-09-01', NULL, 1),
-(8, 2, '2021-01-15', NULL, 1),
-(9, 4, '2021-04-12', NULL, 1),
-(10, 3, '2022-02-28', NULL, 1),
-(11, 7, '2019-07-01', NULL, 1),
-(12, 6, '2020-10-05', NULL, 1),
-(13, 4, '2021-08-19', NULL, 1),
-(14, 3, '2022-05-10', NULL, 1),
-(15, 5, '2020-03-15', NULL, 1),
-(16, 4, '2023-01-09', NULL, 1),
-(17, 2, '2021-11-22', NULL, 1),
-(18, 8, '2023-04-03', NULL, 1),
-(19, 9, '2022-07-18', NULL, 1),
-(20, 3, '2021-09-01', NULL, 1),
-(21, 1, '2019-02-14', NULL, 1),
-(22, 4, '2022-10-10', NULL, 1),
-(23, 6, '2020-12-01', NULL, 1),
-(24, 3, '2023-02-20', NULL, 1),
-(25, 7, '2018-06-15', NULL, 1),
-(26, 4, '2023-05-02', NULL, 1),
-(27, 3, '2023-06-12', NULL, 1),
-(28, 2, '2022-08-01', NULL, 1),
-(29, 9, '2023-09-18', NULL, 1),
-(30, 4, '2022-03-07', NULL, 1),
--- 5 Ex-trabajadores con FechaFin definida y Activo = 0
-(31, 8, '2021-02-01', '2023-12-31', 0),
-(32, 10, '2022-01-10', '2023-06-30', 0),
-(33, 9, '2020-05-01', '2022-11-30', 0),
-(34, 4, '2021-07-15', '2024-01-31', 0),
-(35, 10, '2023-01-15', '2024-03-15', 0);
+(1, 1, '2018-03-01', NULL, 1),          -- ID: 1 (Dr. Kohlberg - Jefe Hematólogo)
+(2, 2, '2019-05-15', NULL, 1),          -- ID: 2 (Dra. Navajas - Inmunohematología)
+(3, 7, '2017-02-01', '2020-12-31', 0),  -- ID: 3 (Dr. Trigo - Histórico como Técnico)
+(3, 3, '2021-01-04', NULL, 1),          -- ID: 4 (Dr. Trigo - Ascenso a Jefe Fraccionamiento)
+(4, 4, '2021-06-10', NULL, 1),          -- ID: 5 (Dra. Echazú - Serología)
+(5, 5, '2018-08-20', NULL, 1),          -- ID: 6 (Dr. Zamora - Control de Calidad)
+(6, 6, '2020-03-12', NULL, 1),          -- ID: 7 (Dra. Ávila - Pruebas Cruzadas)
+(7, 7, '2019-11-01', NULL, 1),          -- ID: 8 (Lic. Vacaflores - Flebotomista Senior)
+(8, 7, '2022-02-14', NULL, 1),          -- ID: 9 (Lic. Gareca - Flebotomista)
+(9, 8, '2021-09-01', NULL, 1),          -- ID: 10 (Lic. Darwich - Aféresis)
+(10, 9, '2023-01-16', NULL, 1),         -- ID: 11 (Lic. Ruíz - Selección Predonación)
+(11, 11, '2020-07-01', NULL, 1),        -- ID: 12 (Téc. Jurado - Cadena de Frío y Despacho)
+(12, 10, '2022-04-18', NULL, 1),        -- ID: 13 (Lic. Farfán - Colectas Móviles)
+(13, 11, '2019-01-10', '2023-06-30', 0),-- ID: 14 (Téc. Segovia - Ex encargado de Kardex)
+(14, 9, '2024-01-08', NULL, 1),         -- ID: 15 (Lic. Castrillo - Selección Predonación)
+(15, 6, '2016-05-01', '2022-12-31', 0); -- ID: 16 (Dr. Michel - Ex médico transfusional)
 GO
 
-/* =========================================================================
-   13. DONANTE_RECEPTOR (100 registros: Donante_Receptor_ID 1 al 100)
-       Mapeados a Persona_ID 26 al 125.
-   ========================================================================= */
+-- 11. DONANTE_RECEPTOR (80 registros: Personas 11..90 -> Donante_Receptor_ID 1..80)
+-- IDs 1..50: Donantes aptos y diferidos; IDs 51..80: Pacientes receptores hospitalarios
 INSERT INTO Donante_Receptor (Persona_ID, FactorRH, GrupoSanguineo) VALUES
-(26, '+', 'O'),  -- Donante_Receptor_ID = 1 (También Personal)
-(27, '+', 'A'),  -- Donante_Receptor_ID = 2 (También Personal)
-(28, '-', 'O'),  -- Donante_Receptor_ID = 3 (También Personal)
-(29, '+', 'B'),  -- Donante_Receptor_ID = 4 (También Personal)
-(30, '+', 'O'),  -- Donante_Receptor_ID = 5 (También Personal)
-(31, '+', 'A'),  -- Donante_Receptor_ID = 6 (También Personal)
-(32, '-', 'A'),  -- Donante_Receptor_ID = 7 (También Personal)
-(33, '+', 'AB'), -- Donante_Receptor_ID = 8 (También Personal)
-(34, '+', 'O'),  -- Donante_Receptor_ID = 9 (También Personal)
-(35, '+', 'O'),  -- Donante_Receptor_ID = 10 (También Personal)
-(36, '+', 'O'),  -- Donante_Receptor_ID = 11
-(37, '+', 'A'),  -- Donante_Receptor_ID = 12
-(38, '+', 'O'),  -- Donante_Receptor_ID = 13
-(39, '+', 'B'),  -- Donante_Receptor_ID = 14
-(40, '-', 'O'),  -- Donante_Receptor_ID = 15
-(41, '+', 'O'),  -- Donante_Receptor_ID = 16
-(42, '+', 'A'),  -- Donante_Receptor_ID = 17
-(43, '+', 'O'),  -- Donante_Receptor_ID = 18
-(44, '+', 'AB'), -- Donante_Receptor_ID = 19
-(45, '+', 'O'),  -- Donante_Receptor_ID = 20
-(46, '-', 'A'),  -- Donante_Receptor_ID = 21
-(47, '+', 'O'),  -- Donante_Receptor_ID = 22
-(48, '+', 'B'),  -- Donante_Receptor_ID = 23
-(49, '+', 'O'),  -- Donante_Receptor_ID = 24
-(50, '+', 'A'),  -- Donante_Receptor_ID = 25
-(51, '-', 'O'),  -- Donante_Receptor_ID = 26
-(52, '+', 'O'),  -- Donante_Receptor_ID = 27
-(53, '+', 'A'),  -- Donante_Receptor_ID = 28
-(54, '+', 'B'),  -- Donante_Receptor_ID = 29
-(55, '+', 'O'),  -- Donante_Receptor_ID = 30
-(56, '-', 'B'),  -- Donante_Receptor_ID = 31
-(57, '+', 'O'),  -- Donante_Receptor_ID = 32
-(58, '+', 'A'),  -- Donante_Receptor_ID = 33
-(59, '+', 'O'),  -- Donante_Receptor_ID = 34
-(60, '+', 'AB'), -- Donante_Receptor_ID = 35
-(61, '+', 'O'),  -- Donante_Receptor_ID = 36
-(62, '+', 'A'),  -- Donante_Receptor_ID = 37
-(63, '-', 'O'),  -- Donante_Receptor_ID = 38
-(64, '+', 'O'),  -- Donante_Receptor_ID = 39
-(65, '+', 'B'),  -- Donante_Receptor_ID = 40
-(66, '+', 'O'),  -- Donante_Receptor_ID = 41
-(67, '+', 'A'),  -- Donante_Receptor_ID = 42
-(68, '+', 'O'),  -- Donante_Receptor_ID = 43
-(69, '-', 'AB'), -- Donante_Receptor_ID = 44
-(70, '+', 'O'),  -- Donante_Receptor_ID = 45
-(71, '+', 'A'),  -- Donante_Receptor_ID = 46
-(72, '+', 'O'),  -- Donante_Receptor_ID = 47
-(73, '+', 'B'),  -- Donante_Receptor_ID = 48
-(74, '-', 'O'),  -- Donante_Receptor_ID = 49
-(75, '+', 'O'),  -- Donante_Receptor_ID = 50
-(76, '+', 'A'),  -- Donante_Receptor_ID = 51
-(77, '+', 'O'),  -- Donante_Receptor_ID = 52
-(78, '+', 'B'),  -- Donante_Receptor_ID = 53
-(79, '-', 'A'),  -- Donante_Receptor_ID = 54
-(80, '+', 'O'),  -- Donante_Receptor_ID = 55
-(81, '+', 'O'),  -- Donante_Receptor_ID = 56
-(82, '+', 'A'),  -- Donante_Receptor_ID = 57
-(83, '+', 'AB'), -- Donante_Receptor_ID = 58
-(84, '+', 'O'),  -- Donante_Receptor_ID = 59
-(85, '-', 'O'),  -- Donante_Receptor_ID = 60
-(86, '+', 'O'),  -- Donante_Receptor_ID = 61
-(87, '+', 'A'),  -- Donante_Receptor_ID = 62
-(88, '+', 'O'),  -- Donante_Receptor_ID = 63
-(89, '+', 'B'),  -- Donante_Receptor_ID = 64
-(90, '+', 'O'),  -- Donante_Receptor_ID = 65
-(91, '-', 'A'),  -- Donante_Receptor_ID = 66
-(92, '+', 'O'),  -- Donante_Receptor_ID = 67
-(93, '+', 'A'),  -- Donante_Receptor_ID = 68
-(94, '+', 'O'),  -- Donante_Receptor_ID = 69
-(95, '+', 'B'),  -- Donante_Receptor_ID = 70
-(96, '-', 'O'),  -- Donante_Receptor_ID = 71
-(97, '+', 'O'),  -- Donante_Receptor_ID = 72
-(98, '+', 'A'),  -- Donante_Receptor_ID = 73
-(99, '+', 'O'),  -- Donante_Receptor_ID = 74
-(100, '+', 'AB'),-- Donante_Receptor_ID = 75
-(101, '+', 'O'), -- Donante_Receptor_ID = 76
-(102, '+', 'A'), -- Donante_Receptor_ID = 77
-(103, '-', 'B'), -- Donante_Receptor_ID = 78
-(104, '+', 'O'), -- Donante_Receptor_ID = 79
-(105, '+', 'A'), -- Donante_Receptor_ID = 80
-(106, '+', 'O'), -- Donante_Receptor_ID = 81
-(107, '+', 'B'), -- Donante_Receptor_ID = 82
-(108, '-', 'O'), -- Donante_Receptor_ID = 83
-(109, '+', 'O'), -- Donante_Receptor_ID = 84
-(110, '+', 'A'), -- Donante_Receptor_ID = 85
-(111, '+', 'O'), -- Donante_Receptor_ID = 86
-(112, '+', 'A'), -- Donante_Receptor_ID = 87
-(113, '+', 'O'), -- Donante_Receptor_ID = 88
-(114, '-', 'A'), -- Donante_Receptor_ID = 89
-(115, '+', 'O'), -- Donante_Receptor_ID = 90
-(116, '+', 'O'), -- Donante_Receptor_ID = 91
-(117, '+', 'A'), -- Donante_Receptor_ID = 92
-(118, '+', 'B'), -- Donante_Receptor_ID = 93
-(119, '-', 'O'), -- Donante_Receptor_ID = 94
-(120, '+', 'O'), -- Donante_Receptor_ID = 95
-(121, '+', 'A'), -- Donante_Receptor_ID = 96
-(122, '+', 'AB'),-- Donante_Receptor_ID = 97
-(123, '+', 'O'), -- Donante_Receptor_ID = 98
-(124, '-', 'A'), -- Donante_Receptor_ID = 99
-(125, '+', 'O'); -- Donante_Receptor_ID = 100
+(11, '+', 'O'), (12, '+', 'O'), (13, '+', 'A'), (14, '+', 'O'), (15, '-', 'O'), -- IDs: 1..5
+(16, '+', 'O'), (17, '+', 'A'), (18, '+', 'O'), (19, '+', 'B'), (20, '-', 'O'), -- IDs: 6..10
+(21, '+', 'O'), (22, '+', 'A'), (23, '+', 'O'), (24, '-', 'A'), (25, '+', 'O'), -- IDs: 11..15
+(26, '+', 'O'), (27, '+', 'B'), (28, '+', 'A'), (29, '+', 'O'), (30, '+', 'AB'),-- IDs: 16..20
+(31, '+', 'O'), (32, '-', 'O'), (33, '+', 'A'), (34, '+', 'O'), (35, '+', 'B'), -- IDs: 21..25
+(36, '+', 'O'), (37, '+', 'A'), (38, '+', 'O'), (39, '-', 'B'), (40, '+', 'O'), -- IDs: 26..30
+(41, '+', 'O'), (42, '+', 'A'), (43, '+', 'O'), (44, '+', 'A'), (45, '-', 'O'), -- IDs: 31..35
+(46, '+', 'O'), (47, '+', 'B'), (48, '+', 'O'), (49, '+', 'A'), (50, '+', 'O'), -- IDs: 36..40
+(51, '+', 'O'), (52, '+', 'A'), (53, '-', 'AB'),(54, '+', 'O'), (55, '+', 'O'), -- IDs: 41..45
+(56, '+', 'A'), (57, '+', 'O'), (58, '+', 'B'), (59, '-', 'A'), (60, '+', 'O'), -- IDs: 46..50
+(61, '+', 'O'), (62, '+', 'A'), (63, '+', 'O'), (64, '-', 'O'), (65, '+', 'B'), -- IDs: 51..55
+(66, '+', 'O'), (67, '+', 'A'), (68, '+', 'AB'),(69, '+', 'O'), (70, '-', 'A'), -- IDs: 56..60
+(71, '+', 'O'), (72, '+', 'B'), (73, '+', 'O'), (74, '+', 'A'), (75, '-', 'O'), -- IDs: 61..65
+(76, '+', 'O'), (77, '+', 'A'), (78, '+', 'O'), (79, '+', 'B'), (80, '-', 'B'), -- IDs: 66..70
+(81, '+', 'O'), (82, '+', 'A'), (83, '+', 'O'), (84, '+', 'AB'),(85, '-', 'O'), -- IDs: 71..75
+(86, '+', 'O'), (87, '+', 'A'), (88, '+', 'O'), (89, '+', 'O'), (90, '-', 'O'); -- IDs: 76..80
 GO
 
-/* =========================================================================
-   14. CHECKEO (135 registros - Evaluaciones pre-donación con Peso y Altura)
-   ========================================================================= */
-INSERT INTO Checkeo (Donante_ID, Altura, Fecha, Peso) VALUES
-(1, 1.75, '2024-01-10', 76.50), (2, 1.63, '2024-01-10', 61.00), (3, 1.78, '2024-01-11', 80.20),
-(4, 1.65, '2024-01-11', 64.00), (5, 1.72, '2024-01-12', 73.40), (6, 1.60, '2024-01-12', 58.50),
-(7, 1.76, '2024-01-13', 79.00), (8, 1.62, '2024-01-13', 60.00), (9, 1.70, '2024-01-14', 71.80),
-(10, 1.66, '2024-01-14', 63.20), (11, 1.74, '2024-01-15', 74.00), (12, 1.61, '2024-01-15', 57.50),
-(13, 1.79, '2024-01-16', 82.00), (14, 1.64, '2024-01-16', 62.30), (15, 1.73, '2024-01-17', 75.10),
-(16, 1.67, '2024-01-17', 65.00), (17, 1.80, '2024-01-18', 84.50), (18, 1.59, '2024-01-18', 56.00),
-(19, 1.71, '2024-01-19', 70.20), (20, 1.65, '2024-01-19', 61.80), (21, 1.77, '2024-01-20', 78.40),
-(22, 1.62, '2024-01-20', 59.00), (23, 1.75, '2024-01-21', 77.00), (24, 1.68, '2024-01-21', 66.50),
-(25, 1.72, '2024-01-22', 72.00), (26, 1.60, '2024-01-22', 58.00), (27, 1.76, '2024-01-23', 81.30),
-(28, 1.63, '2024-01-23', 60.50), (29, 1.74, '2024-01-24', 75.00), (30, 1.61, '2024-01-24', 57.20),
-(31, 1.78, '2024-02-01', 79.80), (32, 1.64, '2024-02-01', 63.00), (33, 1.70, '2024-02-02', 69.50),
-(34, 1.66, '2024-02-02', 62.00), (35, 1.75, '2024-02-03', 76.00), (36, 1.58, '2024-02-03', 55.40),
-(37, 1.81, '2024-02-04', 85.00), (38, 1.65, '2024-02-04', 64.20), (39, 1.73, '2024-02-05', 74.60),
-(40, 1.62, '2024-02-05', 59.80), (41, 1.76, '2024-02-06', 77.50), (42, 1.60, '2024-02-06', 58.10),
-(43, 1.69, '2024-02-07', 68.00), (44, 1.63, '2024-02-07', 61.40), (45, 1.74, '2024-02-08', 73.90),
-(46, 1.67, '2024-02-08', 65.20), (47, 1.71, '2024-02-09', 71.00), (48, 1.61, '2024-02-09', 56.80),
-(49, 1.77, '2024-02-10', 80.00), (50, 1.64, '2024-02-10', 62.50), (51, 1.75, '2024-02-11', 76.20),
-(52, 1.62, '2024-02-11', 59.30), (53, 1.78, '2024-02-12', 81.00), (54, 1.65, '2024-02-12', 63.70),
-(55, 1.72, '2024-02-13', 72.80), (56, 1.60, '2024-02-13', 57.90), (57, 1.76, '2024-02-14', 78.10),
-(58, 1.63, '2024-02-14', 60.40), (59, 1.74, '2024-02-15', 75.50), (60, 1.61, '2024-02-15', 58.60),
-(61, 1.70, '2024-03-01', 70.00), (62, 1.66, '2024-03-01', 64.00), (63, 1.73, '2024-03-02', 74.20),
-(64, 1.62, '2024-03-02', 59.50), (65, 1.79, '2024-03-03', 83.00), (66, 1.59, '2024-03-03', 55.80),
-(67, 1.75, '2024-03-04', 76.90), (68, 1.64, '2024-03-04', 61.70), (69, 1.77, '2024-03-05', 79.30),
-(70, 1.63, '2024-03-05', 60.20), (71, 1.71, '2024-03-06', 71.50), (72, 1.65, '2024-03-06', 63.10),
-(73, 1.74, '2024-03-07', 75.00), (74, 1.60, '2024-03-07', 57.40), (75, 1.76, '2024-03-08', 78.60),
-(76, 1.62, '2024-03-08', 59.10), (77, 1.78, '2024-03-09', 80.50), (78, 1.67, '2024-03-09', 65.80),
-(79, 1.72, '2024-03-10', 73.00), (80, 1.61, '2024-03-10', 58.20), (81, 1.75, '2024-03-11', 74.80),
-(82, 1.64, '2024-03-11', 62.00), (83, 1.80, '2024-03-12', 84.00), (84, 1.66, '2024-03-12', 63.50),
-(85, 1.73, '2024-03-13', 73.70), (86, 1.60, '2024-03-13', 57.00), (87, 1.76, '2024-03-14', 77.90),
-(88, 1.63, '2024-03-14', 60.80), (89, 1.71, '2024-03-15', 70.60), (90, 1.65, '2024-03-15', 62.90),
-(91, 1.74, '2024-03-16', 74.10), (92, 1.62, '2024-03-16', 58.40), (93, 1.69, '2024-03-17', 68.50),
-(94, 1.58, '2024-03-17', 54.00), (95, 1.72, '2024-03-18', 71.20), (96, 1.61, '2024-03-18', 56.50),
-(97, 1.75, '2024-03-19', 76.00), (98, 1.60, '2024-03-19', 57.80), (99, 1.70, '2024-03-20', 69.00),
-(100, 1.63, '2024-03-20', 60.00),
--- 35 Segundos chequeos de donantes habituales meses después (2024-07 y 2024-08)
-(1, 1.75, '2024-07-10', 77.00), (2, 1.63, '2024-07-10', 61.50), (3, 1.78, '2024-07-11', 80.00),
-(4, 1.65, '2024-07-11', 64.20), (5, 1.72, '2024-07-12', 73.00), (6, 1.60, '2024-07-12', 59.00),
-(7, 1.76, '2024-07-13', 78.50), (8, 1.62, '2024-07-13', 60.30), (9, 1.70, '2024-07-14', 72.00),
-(10, 1.66, '2024-07-14', 63.00), (11, 1.74, '2024-07-15', 74.50), (12, 1.61, '2024-07-15', 58.00),
-(13, 1.79, '2024-07-16', 81.80), (14, 1.64, '2024-07-16', 62.00), (15, 1.73, '2024-07-17', 75.50),
-(16, 1.67, '2024-07-17', 65.30), (17, 1.80, '2024-07-18', 84.00), (18, 1.59, '2024-07-18', 56.50),
-(19, 1.71, '2024-07-19', 70.50), (20, 1.65, '2024-07-19', 62.00), (21, 1.77, '2024-08-01', 78.00),
-(22, 1.62, '2024-08-01', 59.40), (23, 1.75, '2024-08-02', 76.80), (24, 1.68, '2024-08-02', 66.00),
-(25, 1.72, '2024-08-03', 72.40), (26, 1.60, '2024-08-03', 58.30), (27, 1.76, '2024-08-04', 81.00),
-(28, 1.63, '2024-08-04', 60.80), (29, 1.74, '2024-08-05', 75.20), (30, 1.61, '2024-08-05', 57.50),
-(31, 1.78, '2024-08-06', 80.10), (32, 1.64, '2024-08-06', 63.40), (33, 1.70, '2024-08-07', 70.00),
-(34, 1.66, '2024-08-07', 62.50), (35, 1.75, '2024-08-08', 76.30);
+-- 12. CHECKEO (85 registros: triaje clínico antropométrico de donantes y receptores)
+INSERT INTO Checkeo (Donante_Receptor_ID, Altura, Fecha, Peso) VALUES
+(1, 1.74, '2026-01-05', 76.50), (2, 1.62, '2026-01-05', 61.20), (3, 1.78, '2026-01-06', 82.00),  -- IDs: 1..3
+(4, 1.65, '2026-01-06', 59.80), (5, 1.71, '2026-01-07', 74.30), (6, 1.76, '2026-01-07', 71.00),  -- IDs: 4..6
+(7, 1.60, '2026-01-08', 56.40), (8, 1.80, '2026-01-08', 84.50), (9, 1.63, '2026-01-09', 58.00),  -- IDs: 7..9
+(10, 1.73, '2026-01-09', 79.20),(11, 1.66, '2026-01-10', 62.50),(12, 1.75, '2026-01-10', 77.80), -- IDs: 10..12
+(13, 1.61, '2026-01-11', 57.30),(14, 1.79, '2026-01-11', 81.40),(15, 1.64, '2026-01-12', 64.00), -- IDs: 13..15
+(16, 1.72, '2026-01-12', 75.60),(17, 1.59, '2026-01-13', 55.90),(18, 1.77, '2026-01-13', 80.10), -- IDs: 16..18
+(19, 1.67, '2026-01-14', 63.40),(20, 1.70, '2026-01-14', 73.00),(21, 1.62, '2026-01-15', 58.70), -- IDs: 19..21
+(22, 1.74, '2026-01-15', 78.50),(23, 1.65, '2026-01-16', 60.20),(24, 1.81, '2026-01-16', 86.00), -- IDs: 22..24
+(25, 1.63, '2026-01-17', 61.80),(26, 1.69, '2026-01-17', 72.40),(27, 1.58, '2026-01-18', 54.60), -- IDs: 25..27
+(28, 1.76, '2026-01-18', 79.90),(29, 1.60, '2026-01-19', 62.10),(30, 1.75, '2026-01-19', 77.00), -- IDs: 28..30
+(31, 1.61, '2026-01-20', 56.80),(32, 1.73, '2026-01-20', 76.20),(33, 1.64, '2026-01-21', 59.50), -- IDs: 31..33
+(34, 1.78, '2026-01-21', 83.10),(35, 1.66, '2026-01-22', 65.00),(36, 1.71, '2026-01-22', 74.80), -- IDs: 34..36
+(37, 1.62, '2026-01-23', 60.40),(38, 1.77, '2026-01-23', 81.20),(39, 1.65, '2026-01-24', 57.90), -- IDs: 37..39
+(40, 1.74, '2026-01-24', 78.00),(41, 1.63, '2026-01-25', 63.20),(42, 1.72, '2026-01-25', 75.10), -- IDs: 40..42
+(43, 1.59, '2026-01-26', 55.40),(44, 1.80, '2026-01-26', 84.00),(45, 1.61, '2026-01-27', 58.60), -- IDs: 43..45
+(46, 1.75, '2026-01-27', 72.30),(47, 1.57, '2026-01-28', 51.20),(48, 1.73, '2026-01-28', 74.00), -- IDs: 46..48
+(49, 1.64, '2026-01-29', 53.50),(50, 1.70, '2026-01-29', 79.40),(51, 1.56, '2026-02-01', 64.20), -- IDs: 49..51
+(52, 1.68, '2026-02-01', 71.50),(53, 1.55, '2026-02-02', 58.90),(54, 1.72, '2026-02-02', 76.80), -- IDs: 52..54
+(55, 1.54, '2026-02-03', 55.00),(56, 1.69, '2026-02-03', 69.30),(57, 1.60, '2026-02-04', 61.40), -- IDs: 55..57
+(58, 1.71, '2026-02-04', 73.20),(59, 1.53, '2026-02-05', 52.80),(60, 1.74, '2026-02-05', 78.60), -- IDs: 58..60
+(61, 1.58, '2026-02-06', 60.10),(62, 1.70, '2026-02-06', 74.90),(63, 1.62, '2026-02-07', 63.70), -- IDs: 61..63
+(64, 1.76, '2026-02-07', 80.50),(65, 1.59, '2026-02-08', 57.20),(66, 1.67, '2026-02-08', 68.40), -- IDs: 64..66
+(67, 1.56, '2026-02-09', 59.60),(68, 1.72, '2026-02-09', 75.30),(69, 1.55, '2026-02-10', 56.10), -- IDs: 67..69
+(70, 1.68, '2026-02-10', 70.80),(71, 1.61, '2026-02-11', 62.90),(72, 1.54, '2026-02-11', 54.30), -- IDs: 70..72
+(73, 1.66, '2026-02-12', 66.70),(74, 1.58, '2026-02-12', 61.00),(75, 1.69, '2026-02-13', 71.20), -- IDs: 73..75
+(76, 1.60, '2026-02-13', 64.50),(77, 1.73, '2026-02-14', 77.40),(78, 1.55, '2026-02-14', 53.90), -- IDs: 76..78
+(79, 1.68, '2026-02-15', 59.20),(80, 1.57, '2026-02-15', 49.80),(1, 1.74, '2026-02-20', 76.80),  -- IDs: 79..81
+(5, 1.71, '2026-02-21', 74.50), (6, 1.76, '2026-02-22', 71.40), (10, 1.73, '2026-02-23', 79.00), -- IDs: 82..84
+(14, 1.79, '2026-02-24', 81.60);                                                                 -- ID: 85
 GO
 
-/* =========================================================================
-   15. CHECKEO_ENFERMEDAD (35 registros - Condiciones detectadas en algunos chequeos)
-   ========================================================================= */
+-- 13. CHECKEOENFERMEDAD (30 registros: diferimientos en triaje y patologías de receptores)
 INSERT INTO CheckeoEnfermedad (Checkeo_ID, Enfermedad_ID) VALUES
-(91, 5),  -- Resfrío común
-(92, 6),  -- Tatuaje reciente
-(93, 10), -- Hipertensión controlada
-(93, 14), -- Además presentó anemia leve en el mismo chequeo
-(94, 14), -- Anemia ferropénica
-(95, 1),  -- Chagas positivo
-(96, 8),  -- Infección dental
-(97, 11), -- Diabetes tipo 1
-(98, 9),  -- Embarazo / Lactancia
-(99, 13), -- Cardiopatía
-(99, 10), -- Hipertensión asociada
-(100, 14),-- Anemia
-(121, 5), -- En su segundo chequeo tuvo resfrío temporal
-(122, 8), -- En su segundo chequeo estaba tomando antibióticos dentales
-(123, 6), -- Tatuaje reciente
-(124, 14),-- Hemoglobina baja temporal
-(125, 5), -- Resfrío común
-(126, 7), -- Cirugía menor reciente
-(127, 10),-- Hipertensión controlada
-(128, 5), -- Estado gripal
-(129, 8), -- Tratamiento dental
-(130, 14),-- Anemia leve
-(131, 6), -- Piercing reciente
-(132, 5), -- Resfrío
-(133, 7), -- Cirugía menor
-(134, 9), -- Lactancia
-(135, 5), -- Resfrío
-(85, 10), -- Hipertensión controlada
-(86, 5),  -- Resfrío
-(87, 6),  -- Tatuaje
-(88, 14), -- Anemia
-(89, 8),  -- Infección dental
-(90, 7),  -- Cirugía menor
-(84, 10), -- Hipertensión controlada
-(83, 10); -- Hipertensión controlada
+(46, 8),  -- Donante 46 diferido temporalmente por Dengue reciente
+(47, 11), -- Donante 47 diferida temporalmente por Lactancia materna
+(48, 10), -- Donante 48 diferido temporalmente por Tatuaje < 12 meses
+(49, 12), -- Donante 49 diferida temporalmente por Tratamiento antibiótico
+(50, 1),  -- Donante 50 rechazado permanente por Serología Chagas Reactiva
+(51, 18), (51, 20), -- Receptor 51: Cardiopatía chagásica + Anemia severa
+(52, 17), (52, 20), -- Receptor 52: Insuficiencia renal en hemodiálisis + Anemia
+(53, 7),            -- Receptor 53: Neoplasia hematológica (Instituto Oncológico)
+(54, 19), (54, 25), -- Receptor 54: Cirrosis hepática + Coagulopatía
+(55, 20),           -- Receptor 55: Anemia ferropénica severa
+(56, 21),           -- Receptor 56: Hemofilia A (requiere Crioprecipitado)
+(57, 22),           -- Receptor 57: Enfermedad de von Willebrand
+(58, 23),           -- Receptor 58: Púrpura Trombocitopénica (requiere Plaquetas)
+(59, 13), (59, 20), -- Receptor 59: Cirugía mayor + Anemia aguda postquirúrgica
+(60, 17),           -- Receptor 60: Insuficiencia renal crónica
+(61, 7),            -- Receptor 61: Paciente oncológico en quimioterapia
+(62, 19),           -- Receptor 62: Cirrosis hepática descompensada
+(63, 25),           -- Receptor 63: Coagulopatía Intravascular Diseminada (CID)
+(64, 21),           -- Receptor 64: Hemofilia A con hemartrosis
+(65, 20),           -- Receptor 65: Anemia severa sintomática
+(66, 13),           -- Receptor 66: Cirugía traumatológica mayor
+(67, 23),           -- Receptor 67: Trombocitopenia severa
+(68, 7),            -- Receptor 68: Leucemia mieloide aguda
+(69, 17),           -- Receptor 69: Hemodiálisis crónica
+(79, 20),           -- Receptor 79: Paciente pediátrico/juvenil con anemia
+(80, 22);           -- Receptor 80: Paciente con déficit de factores de coagulación
 GO
 
-/* =========================================================================
-   16. LUGAR_EXTRACCION (18 registros - EXCLUSIVAMENTE EN TARIJA)
-   ========================================================================= */
+-- 14. LUGAREXTRACCION (15 registros: sedes fijas y colectas móviles en Tarija)
 INSERT INTO LugarExtraccion (Direccion_ID, Tipo) VALUES
-(2, 'Sede Fija Banco de Sangre Departamental'),       -- LugarExtraccion_ID = 1
-(1, 'Unidad Intrahospitalaria HRSJD'),                -- LugarExtraccion_ID = 2
-(3, 'Unidad Intrahospitalaria Hospital Obrero CNS'),  -- LugarExtraccion_ID = 3
-(4, 'Carpa de Campana Movil Plaza Luis de Fuentes'),  -- LugarExtraccion_ID = 4
-(5, 'Punto de Colecta Universitaria Campus El Tejar'),-- LugarExtraccion_ID = 5
-(6, 'Unidad Movil Hemocentro Plaza Principal'),       -- LugarExtraccion_ID = 6
-(7, 'Carpa de Campana Movil Parque Tematico'),        -- LugarExtraccion_ID = 7
-(8, 'Carpa de Campana Movil Parque Bolivar'),         -- LugarExtraccion_ID = 8
-(9, 'Punto de Colecta Universitaria UCB Tarija'),     -- LugarExtraccion_ID = 9
-(13, 'Campana Barrial Centro de Salud Senac'),        -- LugarExtraccion_ID = 10
-(14, 'Carpa de Campana Movil Mercado Campesino'),     -- LugarExtraccion_ID = 11
-(15, 'Campana Universitaria Coliseo Juan XXIII'),     -- LugarExtraccion_ID = 12
-(16, 'Carpa de Campana Movil Plazuela San Roque'),    -- LugarExtraccion_ID = 13
-(17, 'Campana Parroquial Barrio Fatima'),             -- LugarExtraccion_ID = 14
-(18, 'Carpa de Campana Movil Plazuela Sucre'),        -- LugarExtraccion_ID = 15
-(20, 'Punto de Colecta Terminal de Buses Tarija'),    -- LugarExtraccion_ID = 16
-(23, 'Campana Deportiva Coliseo Garcia Agreda'),      -- LugarExtraccion_ID = 17
-(24, 'Carpa de Campana Movil Loma de San Juan');      -- LugarExtraccion_ID = 18
+(1, 'Sede Central - Sala de Flebotomia Banco de Sangre Tarija'),  -- ID: 1
+(1, 'Sede Central - Unidad Especializada de Aferesis'),           -- ID: 2
+(2, 'Puesto Fijo Intrahospitalario - HRSJD Tarija'),              -- ID: 3
+(3, 'Servicio de Transfusion y Colecta - Hospital Obrero CNS'),   -- ID: 4
+(4, 'Unidad Movil - Campaña Plaza Luis de Fuentes y Vargas'),     -- ID: 5
+(5, 'Unidad Movil - Campaña Universitaria UAJMS El Tejar'),       -- ID: 6
+(10, 'Unidad Movil - Colecta Solidaria Fexpo Tarija'),            -- ID: 7
+(11, 'Punto de Colecta - Hospital Municipal San Antonio'),        -- ID: 8
+(12, 'Posta Regional de Hemoterapia - Hospital Ruben Zelaya'),    -- ID: 9
+(14, 'Posta Regional de Hemoterapia - Hospital Virgen Chaguaya'), -- ID: 10
+(15, 'Posta Regional de Hemoterapia - Hospital Villa Montes'),    -- ID: 11
+(16, 'Brigada Movil Provincial - San Lorenzo Mendez'),            -- ID: 12
+(17, 'Brigada Movil Provincial - Valle de la Concepcion'),        -- ID: 13
+(18, 'Brigada Movil Provincial - Municipio de Padcaya'),          -- ID: 14
+(19, 'Brigada Movil Provincial - Entre Rios OConnor');            -- ID: 15
 GO
 
-/* =========================================================================
-   17. EXTRACCION (110 registros: Extraccion_ID 1 al 110)
-       Realizadas por Personal activo en lugares de Tarija a donantes aptos.
-   ========================================================================= */
-INSERT INTO Extraccion (Personal_ID, Donante_ID, LugarExtraccion_ID, Fecha, Metodo, VolumenTotal_ML) VALUES
--- Primeras 55 extracciones (Serán fraccionadas en Glóbulos Rojos, Plasma y Plaquetas)
-(5, 1, 1, '2024-01-10 09:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(9, 2, 1, '2024-01-10 09:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(13, 3, 2, '2024-01-11 08:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(16, 4, 2, '2024-01-11 09:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(22, 5, 4, '2024-01-12 10:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(26, 6, 4, '2024-01-12 10:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(30, 7, 5, '2024-01-13 09:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(4, 8, 5, '2024-01-13 09:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(10, 9, 6, '2024-01-14 10:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(14, 10, 6, '2024-01-14 11:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(20, 11, 1, '2024-01-15 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(24, 12, 1, '2024-01-15 09:10:00', 'Punzon Venoso Sangre Total', 450.00),
-(27, 13, 7, '2024-01-16 09:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(5, 14, 7, '2024-01-16 10:20:00', 'Punzon Venoso Sangre Total', 450.00),
-(9, 15, 8, '2024-01-17 08:50:00', 'Punzon Venoso Sangre Total', 450.00),
-(13, 16, 8, '2024-01-17 09:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(16, 17, 9, '2024-01-18 10:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(22, 18, 9, '2024-01-18 10:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(26, 19, 1, '2024-01-19 08:20:00', 'Punzon Venoso Sangre Total', 450.00),
-(30, 20, 1, '2024-01-19 09:05:00', 'Punzon Venoso Sangre Total', 450.00),
-(4, 21, 10, '2024-01-20 09:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(10, 22, 10, '2024-01-20 10:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(14, 23, 11, '2024-01-21 08:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(20, 24, 11, '2024-01-21 09:20:00', 'Punzon Venoso Sangre Total', 450.00),
-(24, 25, 12, '2024-01-22 10:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(27, 26, 12, '2024-01-22 10:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(5, 27, 1, '2024-01-23 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(9, 28, 1, '2024-01-23 09:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(13, 29, 3, '2024-01-24 09:50:00', 'Punzon Venoso Sangre Total', 450.00),
-(16, 30, 3, '2024-01-24 10:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(22, 31, 4, '2024-02-01 08:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(26, 32, 4, '2024-02-01 09:25:00', 'Punzon Venoso Sangre Total', 450.00),
-(30, 33, 5, '2024-02-02 10:10:00', 'Punzon Venoso Sangre Total', 450.00),
-(4, 34, 5, '2024-02-02 10:50:00', 'Punzon Venoso Sangre Total', 450.00),
-(10, 35, 13, '2024-02-03 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(14, 36, 13, '2024-02-03 09:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(20, 37, 14, '2024-02-04 09:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(24, 38, 14, '2024-02-04 10:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(27, 39, 1, '2024-02-05 08:20:00', 'Punzon Venoso Sangre Total', 450.00),
-(5, 40, 1, '2024-02-05 09:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(9, 41, 15, '2024-02-06 09:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(13, 42, 15, '2024-02-06 10:20:00', 'Punzon Venoso Sangre Total', 450.00),
-(16, 43, 16, '2024-02-07 08:50:00', 'Punzon Venoso Sangre Total', 450.00),
-(22, 44, 16, '2024-02-07 09:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(26, 45, 17, '2024-02-08 10:05:00', 'Punzon Venoso Sangre Total', 450.00),
-(30, 46, 17, '2024-02-08 10:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(4, 47, 18, '2024-02-09 08:35:00', 'Punzon Venoso Sangre Total', 450.00),
-(10, 48, 18, '2024-02-09 09:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(14, 49, 1, '2024-02-10 09:50:00', 'Punzon Venoso Sangre Total', 450.00),
-(20, 50, 1, '2024-02-10 10:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(24, 51, 2, '2024-02-11 08:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(27, 52, 2, '2024-02-11 09:20:00', 'Punzon Venoso Sangre Total', 450.00),
-(5, 53, 4, '2024-02-12 10:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(9, 54, 4, '2024-02-12 10:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(13, 55, 5, '2024-02-13 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
--- Extracciones 56 a 110 (55 extracciones directas sin fraccionamiento posterior)
-(16, 56, 5, '2024-02-13 09:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(22, 57, 6, '2024-02-14 09:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(26, 58, 6, '2024-02-14 10:25:00', 'Punzon Venoso Sangre Total', 450.00),
-(30, 59, 1, '2024-02-15 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(4, 60, 1, '2024-02-15 09:10:00', 'Punzon Venoso Sangre Total', 450.00),
-(10, 61, 7, '2024-03-01 08:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(14, 62, 7, '2024-03-01 09:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(20, 63, 8, '2024-03-02 10:05:00', 'Punzon Venoso Sangre Total', 450.00),
-(24, 64, 8, '2024-03-02 10:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(27, 65, 9, '2024-03-03 08:30:00', 'Aferesis Automatizada', 450.00),
-(5, 66, 9, '2024-03-03 09:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(9, 67, 1, '2024-03-04 09:50:00', 'Punzon Venoso Sangre Total', 450.00),
-(13, 68, 1, '2024-03-04 10:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(16, 69, 2, '2024-03-05 08:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(22, 70, 2, '2024-03-05 09:20:00', 'Punzon Venoso Sangre Total', 450.00),
-(26, 71, 3, '2024-03-06 10:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(30, 72, 3, '2024-03-06 10:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(4, 73, 4, '2024-03-07 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(10, 74, 4, '2024-03-07 09:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(14, 75, 5, '2024-03-08 09:45:00', 'Aferesis Automatizada', 450.00),
-(20, 76, 5, '2024-03-08 10:25:00', 'Punzon Venoso Sangre Total', 450.00),
-(24, 77, 1, '2024-03-09 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(27, 78, 1, '2024-03-09 09:10:00', 'Punzon Venoso Sangre Total', 450.00),
-(5, 79, 10, '2024-03-10 09:50:00', 'Punzon Venoso Sangre Total', 450.00),
-(9, 80, 10, '2024-03-10 10:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(13, 81, 11, '2024-03-11 08:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(16, 82, 11, '2024-03-11 09:20:00', 'Punzon Venoso Sangre Total', 450.00),
-(22, 83, 12, '2024-03-12 10:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(26, 84, 12, '2024-03-12 10:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(30, 85, 1, '2024-03-13 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
--- Segundas donaciones de los donantes 1 al 20 en Julio de 2024 (Extracciones 86 a 110)
-(4, 1, 1, '2024-07-10 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(10, 2, 1, '2024-07-10 09:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(14, 3, 2, '2024-07-11 08:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(20, 4, 2, '2024-07-11 09:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(24, 5, 4, '2024-07-12 10:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(27, 6, 4, '2024-07-12 10:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(5, 7, 5, '2024-07-13 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(9, 8, 5, '2024-07-13 09:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(13, 9, 6, '2024-07-14 09:50:00', 'Punzon Venoso Sangre Total', 450.00),
-(16, 10, 6, '2024-07-14 10:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(22, 11, 1, '2024-07-15 08:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(26, 12, 1, '2024-07-15 09:20:00', 'Punzon Venoso Sangre Total', 450.00),
-(30, 13, 7, '2024-07-16 10:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(4, 14, 7, '2024-07-16 10:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(10, 15, 8, '2024-07-17 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(14, 16, 8, '2024-07-17 09:15:00', 'Punzon Venoso Sangre Total', 450.00),
-(20, 17, 9, '2024-07-18 09:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(24, 18, 9, '2024-07-18 10:25:00', 'Punzon Venoso Sangre Total', 450.00),
-(27, 19, 1, '2024-07-19 08:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(5, 20, 1, '2024-07-19 09:10:00', 'Punzon Venoso Sangre Total', 450.00),
-(9, 36, 13, '2024-08-10 08:45:00', 'Punzon Venoso Sangre Total', 450.00),
-(13, 37, 14, '2024-08-10 09:30:00', 'Punzon Venoso Sangre Total', 450.00),
-(16, 38, 15, '2024-08-11 10:00:00', 'Punzon Venoso Sangre Total', 450.00),
-(22, 39, 16, '2024-08-11 10:40:00', 'Punzon Venoso Sangre Total', 450.00),
-(26, 40, 18, '2024-08-12 09:00:00', 'Punzon Venoso Sangre Total', 450.00);
+-- 15. EXTRACCION (45 registros: 40 de Sangre Total y 5 de Aféresis Automatizada)
+INSERT INTO Extraccion (Personal_ID, Donante_Receptor_ID, LugarExtraccion_ID, Fecha, Metodo, VolumenTotal_ML) VALUES
+(8, 1, 1, '2026-01-05 08:30:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00),  -- ID: 1
+(9, 2, 1, '2026-01-05 09:00:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00),  -- ID: 2
+(8, 3, 1, '2026-01-06 08:20:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 460.00),  -- ID: 3
+(9, 4, 1, '2026-01-06 09:10:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00),  -- ID: 4
+(8, 5, 1, '2026-01-07 08:40:00', 'Flebotomia Bolsa Cuadruple Top & Bottom', 455.00),     -- ID: 5
+(13, 6, 6, '2026-01-07 10:00:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00), -- ID: 6
+(13, 7, 6, '2026-01-08 09:30:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 445.00), -- ID: 7
+(8, 8, 1, '2026-01-08 10:15:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 465.00),  -- ID: 8
+(9, 9, 5, '2026-01-09 09:00:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00),  -- ID: 9
+(8, 10, 1, '2026-01-09 10:30:00', 'Flebotomia Bolsa Cuadruple Top & Bottom', 460.00),    -- ID: 10
+(9, 11, 1, '2026-01-10 08:15:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00), -- ID: 11
+(8, 12, 3, '2026-01-10 09:20:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 455.00), -- ID: 12
+(13, 13, 6, '2026-01-11 09:00:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 440.00),-- ID: 13
+(8, 14, 1, '2026-01-11 10:10:00', 'Flebotomia Bolsa Cuadruple Top & Bottom', 460.00),    -- ID: 14
+(9, 15, 1, '2026-01-12 08:30:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00), -- ID: 15
+(8, 16, 4, '2026-01-12 09:45:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 455.00), -- ID: 16
+(9, 17, 1, '2026-01-13 08:25:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 445.00), -- ID: 17
+(8, 18, 1, '2026-01-13 09:50:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 460.00), -- ID: 18
+(13, 19, 5, '2026-01-14 09:15:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00),-- ID: 19
+(8, 20, 1, '2026-01-14 10:40:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00), -- ID: 20
+(9, 21, 1, '2026-01-15 08:30:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 445.00), -- ID: 21
+(8, 22, 1, '2026-01-15 09:35:00', 'Flebotomia Bolsa Cuadruple Top & Bottom', 460.00),    -- ID: 22
+(13, 23, 7, '2026-01-16 10:00:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00),-- ID: 23
+(8, 24, 1, '2026-01-16 11:10:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 465.00), -- ID: 24
+(9, 25, 1, '2026-01-17 08:20:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00), -- ID: 25
+(13, 26, 10, '2026-01-17 09:30:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 455.00),-- ID: 26
+(9, 27, 1, '2026-01-18 08:45:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 440.00), -- ID: 27
+(8, 28, 1, '2026-01-18 10:00:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 460.00), -- ID: 28
+(9, 29, 8, '2026-01-19 08:30:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 450.00), -- ID: 29
+(8, 30, 1, '2026-01-19 09:50:00', 'Flebotomia Bolsa Cuadruple CPD/SAG-Manitol', 455.00), -- ID: 30
+(13, 31, 12, '2026-01-20 09:00:00', 'Flebotomia Bolsa Triple CPDA-1', 450.00),           -- ID: 31
+(13, 32, 9, '2026-01-20 10:30:00', 'Flebotomia Bolsa Triple CPDA-1', 455.00),            -- ID: 32
+(9, 33, 13, '2026-01-21 09:15:00', 'Flebotomia Bolsa Triple CPDA-1', 445.00),            -- ID: 33
+(8, 34, 1, '2026-01-21 10:20:00', 'Flebotomia Bolsa Triple CPDA-1', 460.00),             -- ID: 34
+(9, 35, 1, '2026-01-22 08:40:00', 'Flebotomia Bolsa Triple CPDA-1', 450.00),             -- ID: 35
+(13, 36, 11, '2026-01-22 10:00:00', 'Flebotomia Bolsa Triple CPDA-1', 455.00),           -- ID: 36
+(8, 37, 14, '2026-01-23 09:10:00', 'Flebotomia Bolsa Triple CPDA-1', 450.00),            -- ID: 37
+(9, 38, 15, '2026-01-23 10:35:00', 'Flebotomia Bolsa Triple CPDA-1', 460.00),            -- ID: 38
+(8, 39, 1, '2026-01-24 08:30:00', 'Flebotomia Bolsa Simple CPDA-1', 450.00),             -- ID: 39
+(9, 40, 1, '2026-01-24 09:40:00', 'Flebotomia Bolsa Simple CPDA-1', 455.00),             -- ID: 40
+(10, 41, 2, '2026-01-25 08:30:00', 'Plaquetoaferesis Automatizada Doble Dosis', 420.00), -- ID: 41
+(10, 42, 2, '2026-01-25 10:30:00', 'Plaquetoaferesis Automatizada Doble Dosis', 430.00), -- ID: 42
+(10, 43, 2, '2026-01-26 08:30:00', 'Plaquetoaferesis Automatizada Doble Dosis', 415.00), -- ID: 43
+(10, 44, 2, '2026-01-26 10:30:00', 'Eritroaferesis Automatizada Doble Unidad', 400.00),  -- ID: 44
+(10, 45, 2, '2026-01-27 09:00:00', 'Plaquetoaferesis Automatizada Dosis Unica', 220.00); -- ID: 45
 GO
 
-/* =========================================================================
-   18. UNIDAD_EXTRAIDA (275 registros en total: Unidad_ID 1 al 275)
-       - Unidades 1 a 55: Bolsas madre de Sangre Total (UnidadOrigen_ID = NULL, Estado = 0 porque fueron FRACCIONADAS).
-       - Unidades 56 a 85: Bolsas de Sangre Total sin fraccionar YA UTILIZADAS en transfusiones (UnidadOrigen_ID = NULL, Estado = 0).
-       - Unidades 86 a 110: Bolsas de Sangre Total sin fraccionar DISPONIBLES en stock (UnidadOrigen_ID = NULL, Estado = 1).
-       - Unidades 111 a 200: 90 Hemocomponentes derivados (CGR, PFC, Plaquetas) YA UTILIZADOS en transfusiones (UnidadOrigen_ID = 1..30, Estado = 0).
-       - Unidades 201 a 275: 75 Hemocomponentes derivados (CGR, PFC, Plaquetas) DISPONIBLES en stock (UnidadOrigen_ID = 31..55, Estado = 1).
-   ========================================================================= */
+-- =============================================================================
+-- 16. UNIDADEXTRAIDA (170 registros en 3 niveles jerárquicos de fraccionamiento)
+-- =============================================================================
+-- NIVEL 0 (IDs 1..45): UNIDADES MADRE EXTRAÍDAS DIRECTAMENTE (UnidadOrigen_ID = NULL)
+-- Unidades 1..38: Sangre Total (Estado=0 tras centrifugación y separación en < 8h)
+-- Unidades 39..40: Sangre Total conservada sin fraccionar (Estado=1)
+-- Unidades 41..44: Colectas madre de Aféresis divididas en 2 dosis (Estado=0)
+-- Unidad 45: Dosis única de Plaquetas por Aféresis directa (Estado=1)
 INSERT INTO UnidadExtraida (Extraccion_ID, UnidadOrigen_ID, TipoComponente_ID, VolumenML, FechaObtencion, Estado) VALUES
--- 1 a 55: Bolsas Madre de Sangre Total que pasaron a Fraccionamiento (Estado = 0)
-(1, NULL, 1, 450.00, '2024-01-10 09:15:00', 0),
-(2, NULL, 1, 450.00, '2024-01-10 09:45:00', 0),
-(3, NULL, 1, 450.00, '2024-01-11 09:00:00', 0),
-(4, NULL, 1, 450.00, '2024-01-11 09:30:00', 0),
-(5, NULL, 1, 450.00, '2024-01-12 10:15:00', 0),
-(6, NULL, 1, 450.00, '2024-01-12 10:45:00', 0),
-(7, NULL, 1, 450.00, '2024-01-13 09:15:00', 0),
-(8, NULL, 1, 450.00, '2024-01-13 09:55:00', 0),
-(9, NULL, 1, 450.00, '2024-01-14 10:30:00', 0),
-(10, NULL, 1, 450.00, '2024-01-14 11:15:00', 0),
-(11, NULL, 1, 450.00, '2024-01-15 08:45:00', 0),
-(12, NULL, 1, 450.00, '2024-01-15 09:25:00', 0),
-(13, NULL, 1, 450.00, '2024-01-16 10:00:00', 0),
-(14, NULL, 1, 450.00, '2024-01-16 10:35:00', 0),
-(15, NULL, 1, 450.00, '2024-01-17 09:05:00', 0),
-(16, NULL, 1, 450.00, '2024-01-17 09:45:00', 0),
-(17, NULL, 1, 450.00, '2024-01-18 10:15:00', 0),
-(18, NULL, 1, 450.00, '2024-01-18 10:55:00', 0),
-(19, NULL, 1, 450.00, '2024-01-19 08:35:00', 0),
-(20, NULL, 1, 450.00, '2024-01-19 09:20:00', 0),
-(21, NULL, 1, 450.00, '2024-01-20 09:45:00', 0),
-(22, NULL, 1, 450.00, '2024-01-20 10:30:00', 0),
-(23, NULL, 1, 450.00, '2024-01-21 08:55:00', 0),
-(24, NULL, 1, 450.00, '2024-01-21 09:35:00', 0),
-(25, NULL, 1, 450.00, '2024-01-22 10:15:00', 0),
-(26, NULL, 1, 450.00, '2024-01-22 11:00:00', 0),
-(27, NULL, 1, 450.00, '2024-01-23 08:45:00', 0),
-(28, NULL, 1, 450.00, '2024-01-23 09:30:00', 0),
-(29, NULL, 1, 450.00, '2024-01-24 10:05:00', 0),
-(30, NULL, 1, 450.00, '2024-01-24 10:45:00', 0),
-(31, NULL, 1, 450.00, '2024-02-01 09:00:00', 0),
-(32, NULL, 1, 450.00, '2024-02-01 09:40:00', 0),
-(33, NULL, 1, 450.00, '2024-02-02 10:25:00', 0),
-(34, NULL, 1, 450.00, '2024-02-02 11:05:00', 0),
-(35, NULL, 1, 450.00, '2024-02-03 08:45:00', 0),
-(36, NULL, 1, 450.00, '2024-02-03 09:30:00', 0),
-(37, NULL, 1, 450.00, '2024-02-04 10:00:00', 0),
-(38, NULL, 1, 450.00, '2024-02-04 10:45:00', 0),
-(39, NULL, 1, 450.00, '2024-02-05 08:35:00', 0),
-(40, NULL, 1, 450.00, '2024-02-05 09:15:00', 0),
-(41, NULL, 1, 450.00, '2024-02-06 09:55:00', 0),
-(42, NULL, 1, 450.00, '2024-02-06 10:35:00', 0),
-(43, NULL, 1, 450.00, '2024-02-07 09:05:00', 0),
-(44, NULL, 1, 450.00, '2024-02-07 09:45:00', 0),
-(45, NULL, 1, 450.00, '2024-02-08 10:20:00', 0),
-(46, NULL, 1, 450.00, '2024-02-08 11:00:00', 0),
-(47, NULL, 1, 450.00, '2024-02-09 08:50:00', 0),
-(48, NULL, 1, 450.00, '2024-02-09 09:30:00', 0),
-(49, NULL, 1, 450.00, '2024-02-10 10:05:00', 0),
-(50, NULL, 1, 450.00, '2024-02-10 10:45:00', 0),
-(51, NULL, 1, 450.00, '2024-02-11 08:55:00', 0),
-(52, NULL, 1, 450.00, '2024-02-11 09:35:00', 0),
-(53, NULL, 1, 450.00, '2024-02-12 10:15:00', 0),
-(54, NULL, 1, 450.00, '2024-02-12 10:55:00', 0),
-(55, NULL, 1, 450.00, '2024-02-13 08:45:00', 0),
--- 56 a 85: Bolsas de Sangre Total sin fraccionar que YA FUERON TRANSFUNDIDAS (Estado = 0)
-(56, NULL, 1, 450.00, '2024-02-13 09:30:00', 0),
-(57, NULL, 1, 450.00, '2024-02-14 10:00:00', 0),
-(58, NULL, 1, 450.00, '2024-02-14 10:40:00', 0),
-(59, NULL, 1, 450.00, '2024-02-15 08:45:00', 0),
-(60, NULL, 1, 450.00, '2024-02-15 09:25:00', 0),
-(61, NULL, 1, 450.00, '2024-03-01 09:00:00', 0),
-(62, NULL, 1, 450.00, '2024-03-01 09:45:00', 0),
-(63, NULL, 1, 450.00, '2024-03-02 10:20:00', 0),
-(64, NULL, 1, 450.00, '2024-03-02 11:00:00', 0),
-(65, NULL, 2, 450.00, '2024-03-03 08:50:00', 0),
-(66, NULL, 1, 450.00, '2024-03-03 09:30:00', 0),
-(67, NULL, 1, 450.00, '2024-03-04 10:05:00', 0),
-(68, NULL, 1, 450.00, '2024-03-04 10:45:00', 0),
-(69, NULL, 1, 450.00, '2024-03-05 08:55:00', 0),
-(70, NULL, 1, 450.00, '2024-03-05 09:35:00', 0),
-(71, NULL, 1, 450.00, '2024-03-06 10:15:00', 0),
-(72, NULL, 1, 450.00, '2024-03-06 10:55:00', 0),
-(73, NULL, 1, 450.00, '2024-03-07 08:45:00', 0),
-(74, NULL, 1, 450.00, '2024-03-07 09:30:00', 0),
-(75, NULL, 4, 450.00, '2024-03-08 10:05:00', 0),
-(76, NULL, 1, 450.00, '2024-03-08 10:40:00', 0),
-(77, NULL, 1, 450.00, '2024-03-09 08:45:00', 0),
-(78, NULL, 1, 450.00, '2024-03-09 09:25:00', 0),
-(79, NULL, 1, 450.00, '2024-03-10 10:05:00', 0),
-(80, NULL, 1, 450.00, '2024-03-10 10:45:00', 0),
-(81, NULL, 1, 450.00, '2024-03-11 08:55:00', 0),
-(82, NULL, 1, 450.00, '2024-03-11 09:35:00', 0),
-(83, NULL, 1, 450.00, '2024-03-12 10:15:00', 0),
-(84, NULL, 1, 450.00, '2024-03-12 10:55:00', 0),
-(85, NULL, 1, 450.00, '2024-03-13 08:45:00', 0),
--- 86 a 110: Bolsas de Sangre Total sin fraccionar DISPONIBLES en refrigeración (Estado = 1)
-(86, NULL, 1, 450.00, '2024-07-10 08:45:00', 1),
-(87, NULL, 1, 450.00, '2024-07-10 09:30:00', 1),
-(88, NULL, 1, 450.00, '2024-07-11 09:00:00', 1),
-(89, NULL, 1, 450.00, '2024-07-11 09:45:00', 1),
-(90, NULL, 1, 450.00, '2024-07-12 10:15:00', 1),
-(91, NULL, 1, 450.00, '2024-07-12 10:55:00', 1),
-(92, NULL, 1, 450.00, '2024-07-13 08:45:00', 1),
-(93, NULL, 1, 450.00, '2024-07-13 09:30:00', 1),
-(94, NULL, 1, 450.00, '2024-07-14 10:05:00', 1),
-(95, NULL, 1, 450.00, '2024-07-14 10:45:00', 1),
-(96, NULL, 1, 450.00, '2024-07-15 08:55:00', 1),
-(97, NULL, 1, 450.00, '2024-07-15 09:35:00', 1),
-(98, NULL, 1, 450.00, '2024-07-16 10:15:00', 1),
-(99, NULL, 1, 450.00, '2024-07-16 10:55:00', 1),
-(100, NULL, 1, 450.00, '2024-07-17 08:45:00', 1),
-(101, NULL, 1, 450.00, '2024-07-17 09:30:00', 1),
-(102, NULL, 1, 450.00, '2024-07-18 10:00:00', 1),
-(103, NULL, 1, 450.00, '2024-07-18 10:40:00', 1),
-(104, NULL, 1, 450.00, '2024-07-19 08:45:00', 1),
-(105, NULL, 1, 450.00, '2024-07-19 09:25:00', 1),
-(106, NULL, 1, 450.00, '2024-08-10 09:00:00', 1),
-(107, NULL, 1, 450.00, '2024-08-10 09:45:00', 1),
-(108, NULL, 1, 450.00, '2024-08-11 10:15:00', 1),
-(109, NULL, 1, 450.00, '2024-08-11 10:55:00', 1),
-(110, NULL, 1, 450.00, '2024-08-12 09:15:00', 1),
--- 111 a 200: 90 Hemocomponentes Fraccionados (de Unidades Madre 1 a 30) YA TRANSFUNDIDOS (Estado = 0)
-(1, 1, 2, 250.00, '2024-01-10 14:00:00', 0),
-(1, 1, 3, 150.00, '2024-01-10 14:05:00', 0),
-(1, 1, 4, 50.00, '2024-01-10 14:10:00', 0),
-(2, 2, 2, 250.00, '2024-01-10 14:30:00', 0),
-(2, 2, 3, 150.00, '2024-01-10 14:35:00', 0),
-(2, 2, 4, 50.00, '2024-01-10 14:40:00', 0),
-(3, 3, 2, 250.00, '2024-01-11 14:00:00', 0),
-(3, 3, 3, 150.00, '2024-01-11 14:05:00', 0),
-(3, 3, 4, 50.00, '2024-01-11 14:10:00', 0),
-(4, 4, 2, 250.00, '2024-01-11 14:30:00', 0),
-(4, 4, 3, 150.00, '2024-01-11 14:35:00', 0),
-(4, 4, 4, 50.00, '2024-01-11 14:40:00', 0),
-(5, 5, 2, 250.00, '2024-01-12 15:00:00', 0),
-(5, 5, 3, 150.00, '2024-01-12 15:05:00', 0),
-(5, 5, 4, 50.00, '2024-01-12 15:10:00', 0),
-(6, 6, 2, 250.00, '2024-01-12 15:30:00', 0),
-(6, 6, 3, 150.00, '2024-01-12 15:35:00', 0),
-(6, 6, 4, 50.00, '2024-01-12 15:40:00', 0),
-(7, 7, 2, 250.00, '2024-01-13 14:00:00', 0),
-(7, 7, 3, 150.00, '2024-01-13 14:05:00', 0),
-(7, 7, 4, 50.00, '2024-01-13 14:10:00', 0),
-(8, 8, 2, 250.00, '2024-01-13 14:30:00', 0),
-(8, 8, 3, 150.00, '2024-01-13 14:35:00', 0),
-(8, 8, 4, 50.00, '2024-01-13 14:40:00', 0),
-(9, 9, 2, 250.00, '2024-01-14 15:00:00', 0),
-(9, 9, 3, 150.00, '2024-01-14 15:05:00', 0),
-(9, 9, 4, 50.00, '2024-01-14 15:10:00', 0),
-(10, 10, 2, 250.00, '2024-01-14 15:30:00', 0),
-(10, 10, 3, 150.00, '2024-01-14 15:35:00', 0),
-(10, 10, 4, 50.00, '2024-01-14 15:40:00', 0),
-(11, 11, 2, 250.00, '2024-01-15 14:00:00', 0),
-(11, 11, 3, 150.00, '2024-01-15 14:05:00', 0),
-(11, 11, 4, 50.00, '2024-01-15 14:10:00', 0),
-(12, 12, 2, 250.00, '2024-01-15 14:30:00', 0),
-(12, 12, 3, 150.00, '2024-01-15 14:35:00', 0),
-(12, 12, 4, 50.00, '2024-01-15 14:40:00', 0),
-(13, 13, 2, 250.00, '2024-01-16 14:00:00', 0),
-(13, 13, 3, 150.00, '2024-01-16 14:05:00', 0),
-(13, 13, 4, 50.00, '2024-01-16 14:10:00', 0),
-(14, 14, 2, 250.00, '2024-01-16 14:30:00', 0),
-(14, 14, 3, 150.00, '2024-01-16 14:35:00', 0),
-(14, 14, 4, 50.00, '2024-01-16 14:40:00', 0),
-(15, 15, 2, 250.00, '2024-01-17 14:00:00', 0),
-(15, 15, 3, 150.00, '2024-01-17 14:05:00', 0),
-(15, 15, 4, 50.00, '2024-01-17 14:10:00', 0),
-(16, 16, 2, 250.00, '2024-01-17 14:30:00', 0),
-(16, 16, 3, 150.00, '2024-01-17 14:35:00', 0),
-(16, 16, 4, 50.00, '2024-01-17 14:40:00', 0),
-(17, 17, 2, 250.00, '2024-01-18 15:00:00', 0),
-(17, 17, 3, 150.00, '2024-01-18 15:05:00', 0),
-(17, 17, 4, 50.00, '2024-01-18 15:10:00', 0),
-(18, 18, 2, 250.00, '2024-01-18 15:30:00', 0),
-(18, 18, 3, 150.00, '2024-01-18 15:35:00', 0),
-(18, 18, 4, 50.00, '2024-01-18 15:40:00', 0),
-(19, 19, 2, 250.00, '2024-01-19 14:00:00', 0),
-(19, 19, 3, 150.00, '2024-01-19 14:05:00', 0),
-(19, 19, 4, 50.00, '2024-01-19 14:10:00', 0),
-(20, 20, 2, 250.00, '2024-01-19 14:30:00', 0),
-(20, 20, 3, 150.00, '2024-01-19 14:35:00', 0),
-(20, 20, 4, 50.00, '2024-01-19 14:40:00', 0),
-(21, 21, 2, 250.00, '2024-01-20 14:00:00', 0),
-(21, 21, 3, 150.00, '2024-01-20 14:05:00', 0),
-(21, 21, 4, 50.00, '2024-01-20 14:10:00', 0),
-(22, 22, 2, 250.00, '2024-01-20 14:30:00', 0),
-(22, 22, 3, 150.00, '2024-01-20 14:35:00', 0),
-(22, 22, 4, 50.00, '2024-01-20 14:40:00', 0),
-(23, 23, 2, 250.00, '2024-01-21 14:00:00', 0),
-(23, 23, 3, 150.00, '2024-01-21 14:05:00', 0),
-(23, 23, 4, 50.00, '2024-01-21 14:10:00', 0),
-(24, 24, 2, 250.00, '2024-01-21 14:30:00', 0),
-(24, 24, 3, 150.00, '2024-01-21 14:35:00', 0),
-(24, 24, 4, 50.00, '2024-01-21 14:40:00', 0),
-(25, 25, 2, 250.00, '2024-01-22 15:00:00', 0),
-(25, 25, 3, 150.00, '2024-01-22 15:05:00', 0),
-(25, 25, 4, 50.00, '2024-01-22 15:10:00', 0),
-(26, 26, 2, 250.00, '2024-01-22 15:30:00', 0),
-(26, 26, 3, 150.00, '2024-01-22 15:35:00', 0),
-(26, 26, 4, 50.00, '2024-01-22 15:40:00', 0),
-(27, 27, 2, 250.00, '2024-01-23 14:00:00', 0),
-(27, 27, 3, 150.00, '2024-01-23 14:05:00', 0),
-(27, 27, 4, 50.00, '2024-01-23 14:10:00', 0),
-(28, 28, 2, 250.00, '2024-01-23 14:30:00', 0),
-(28, 28, 3, 150.00, '2024-01-23 14:35:00', 0),
-(28, 28, 4, 50.00, '2024-01-23 14:40:00', 0),
-(29, 29, 2, 250.00, '2024-01-24 15:00:00', 0),
-(29, 29, 3, 150.00, '2024-01-24 15:05:00', 0),
-(29, 29, 4, 50.00, '2024-01-24 15:10:00', 0),
-(30, 30, 2, 250.00, '2024-01-24 15:30:00', 0),
-(30, 30, 3, 150.00, '2024-01-24 15:35:00', 0),
-(30, 30, 4, 50.00, '2024-01-24 15:40:00', 0),
--- 201 a 275: 75 Hemocomponentes Fraccionados (de Unidades Madre 31 a 55) DISPONIBLES EN STOCK (Estado = 1)
-(31, 31, 2, 250.00, '2024-02-01 14:00:00', 1),
-(31, 31, 3, 150.00, '2024-02-01 14:05:00', 1),
-(31, 31, 4, 50.00, '2024-02-01 14:10:00', 1),
-(32, 32, 2, 250.00, '2024-02-01 14:30:00', 1),
-(32, 32, 3, 150.00, '2024-02-01 14:35:00', 1),
-(32, 32, 4, 50.00, '2024-02-01 14:40:00', 1),
-(33, 33, 2, 250.00, '2024-02-02 15:00:00', 1),
-(33, 33, 3, 150.00, '2024-02-02 15:05:00', 1),
-(33, 33, 4, 50.00, '2024-02-02 15:10:00', 1),
-(34, 34, 2, 250.00, '2024-02-02 15:30:00', 1),
-(34, 34, 3, 150.00, '2024-02-02 15:35:00', 1),
-(34, 34, 4, 50.00, '2024-02-02 15:40:00', 1),
-(35, 35, 2, 250.00, '2024-02-03 14:00:00', 1),
-(35, 35, 3, 150.00, '2024-02-03 14:05:00', 1),
-(35, 35, 4, 50.00, '2024-02-03 14:10:00', 1),
-(36, 36, 2, 250.00, '2024-02-03 14:30:00', 1),
-(36, 36, 3, 150.00, '2024-02-03 14:35:00', 1),
-(36, 36, 4, 50.00, '2024-02-03 14:40:00', 1),
-(37, 37, 2, 250.00, '2024-02-04 15:00:00', 1),
-(37, 37, 3, 150.00, '2024-02-04 15:05:00', 1),
-(37, 37, 4, 50.00, '2024-02-04 15:10:00', 1),
-(38, 38, 2, 250.00, '2024-02-04 15:30:00', 1),
-(38, 38, 3, 150.00, '2024-02-04 15:35:00', 1),
-(38, 38, 4, 50.00, '2024-02-04 15:40:00', 1),
-(39, 39, 2, 250.00, '2024-02-05 14:00:00', 1),
-(39, 39, 3, 150.00, '2024-02-05 14:05:00', 1),
-(39, 39, 4, 50.00, '2024-02-05 14:10:00', 1),
-(40, 40, 2, 250.00, '2024-02-05 14:30:00', 1),
-(40, 40, 3, 150.00, '2024-02-05 14:35:00', 1),
-(40, 40, 4, 50.00, '2024-02-05 14:40:00', 1),
-(41, 41, 2, 250.00, '2024-02-06 15:00:00', 1),
-(41, 41, 3, 150.00, '2024-02-06 15:05:00', 1),
-(41, 41, 4, 50.00, '2024-02-06 15:10:00', 1),
-(42, 42, 2, 250.00, '2024-02-06 15:30:00', 1),
-(42, 42, 3, 150.00, '2024-02-06 15:35:00', 1),
-(42, 42, 4, 50.00, '2024-02-06 15:40:00', 1),
-(43, 43, 2, 250.00, '2024-02-07 14:00:00', 1),
-(43, 43, 3, 150.00, '2024-02-07 14:05:00', 1),
-(43, 43, 4, 50.00, '2024-02-07 14:10:00', 1),
-(44, 44, 2, 250.00, '2024-02-07 14:30:00', 1),
-(44, 44, 3, 150.00, '2024-02-07 14:35:00', 1),
-(44, 44, 4, 50.00, '2024-02-07 14:40:00', 1),
-(45, 45, 2, 250.00, '2024-02-08 15:00:00', 1),
-(45, 45, 3, 150.00, '2024-02-08 15:05:00', 1),
-(45, 45, 4, 50.00, '2024-02-08 15:10:00', 1),
-(46, 46, 2, 250.00, '2024-02-08 15:30:00', 1),
-(46, 46, 3, 150.00, '2024-02-08 15:35:00', 1),
-(46, 46, 4, 50.00, '2024-02-08 15:40:00', 1),
-(47, 47, 2, 250.00, '2024-02-09 14:00:00', 1),
-(47, 47, 3, 150.00, '2024-02-09 14:05:00', 1),
-(47, 47, 4, 50.00, '2024-02-09 14:10:00', 1),
-(48, 48, 2, 250.00, '2024-02-09 14:30:00', 1),
-(48, 48, 3, 150.00, '2024-02-09 14:35:00', 1),
-(48, 48, 4, 50.00, '2024-02-09 14:40:00', 1),
-(49, 49, 2, 250.00, '2024-02-10 15:00:00', 1),
-(49, 49, 3, 150.00, '2024-02-10 15:05:00', 1),
-(49, 49, 4, 50.00, '2024-02-10 15:10:00', 1),
-(50, 50, 2, 250.00, '2024-02-10 15:30:00', 1),
-(50, 50, 3, 150.00, '2024-02-10 15:35:00', 1),
-(50, 50, 4, 50.00, '2024-02-10 15:40:00', 1),
-(51, 51, 2, 250.00, '2024-02-11 14:00:00', 1),
-(51, 51, 3, 150.00, '2024-02-11 14:05:00', 1),
-(51, 51, 4, 50.00, '2024-02-11 14:10:00', 1),
-(52, 52, 2, 250.00, '2024-02-11 14:30:00', 1),
-(52, 52, 3, 150.00, '2024-02-11 14:35:00', 1),
-(52, 52, 4, 50.00, '2024-02-11 14:40:00', 1),
-(53, 53, 2, 250.00, '2024-02-12 15:00:00', 1),
-(53, 53, 3, 150.00, '2024-02-12 15:05:00', 1),
-(53, 53, 4, 50.00, '2024-02-12 15:10:00', 1),
-(54, 54, 2, 250.00, '2024-02-12 15:30:00', 1),
-(54, 54, 5, 150.00, '2024-02-12 15:35:00', 1),
-(54, 54, 4, 50.00, '2024-02-12 15:40:00', 1),
-(55, 55, 2, 250.00, '2024-02-13 14:00:00', 1),
-(55, 55, 5, 150.00, '2024-02-13 14:05:00', 1),
-(55, 55, 4, 50.00, '2024-02-13 14:10:00', 1);
+(1, NULL, 1, 450.00, '2026-01-05 08:45:00', 0),  -- ID: 1 (Madre ST -> origina IDs 46, 47, 48)
+(2, NULL, 1, 450.00, '2026-01-05 09:15:00', 0),  -- ID: 2 (Madre ST -> origina IDs 49, 50, 51)
+(3, NULL, 1, 460.00, '2026-01-06 08:35:00', 0),  -- ID: 3 (Madre ST -> origina IDs 52, 53, 54)
+(4, NULL, 1, 450.00, '2026-01-06 09:25:00', 0),  -- ID: 4 (Madre ST -> origina IDs 55, 56, 57)
+(5, NULL, 1, 455.00, '2026-01-07 08:55:00', 0),  -- ID: 5 (Madre ST -> origina IDs 58, 59, 60)
+(6, NULL, 1, 450.00, '2026-01-07 10:15:00', 0),  -- ID: 6 (Madre ST -> origina IDs 61, 62, 63)
+(7, NULL, 1, 445.00, '2026-01-08 09:45:00', 0),  -- ID: 7 (Madre ST -> origina IDs 64, 65, 66)
+(8, NULL, 1, 465.00, '2026-01-08 10:30:00', 0),  -- ID: 8 (Madre ST -> origina IDs 67, 68, 69)
+(9, NULL, 1, 450.00, '2026-01-09 09:15:00', 0),  -- ID: 9 (Madre ST -> origina IDs 70, 71, 72)
+(10, NULL, 1, 460.00, '2026-01-09 10:45:00', 0), -- ID: 10 (Madre ST -> origina IDs 73, 74, 75)
+(11, NULL, 1, 450.00, '2026-01-10 08:30:00', 0), -- ID: 11 (Madre ST -> origina IDs 76, 77, 78)
+(12, NULL, 1, 455.00, '2026-01-10 09:35:00', 0), -- ID: 12 (Madre ST -> origina IDs 79, 80, 81)
+(13, NULL, 1, 440.00, '2026-01-11 09:15:00', 0), -- ID: 13 (Madre ST -> origina IDs 82, 83, 84)
+(14, NULL, 1, 460.00, '2026-01-11 10:25:00', 0), -- ID: 14 (Madre ST -> origina IDs 85, 86, 87)
+(15, NULL, 1, 450.00, '2026-01-12 08:45:00', 0), -- ID: 15 (Madre ST -> origina IDs 88, 89, 90)
+(16, NULL, 1, 455.00, '2026-01-12 10:00:00', 0), -- ID: 16 (Madre ST -> origina IDs 91, 92, 93)
+(17, NULL, 1, 445.00, '2026-01-13 08:40:00', 0), -- ID: 17 (Madre ST -> origina IDs 94, 95, 96)
+(18, NULL, 1, 460.00, '2026-01-13 10:05:00', 0), -- ID: 18 (Madre ST -> origina IDs 97, 98, 99)
+(19, NULL, 1, 450.00, '2026-01-14 09:30:00', 0), -- ID: 19 (Madre ST -> origina IDs 100, 101, 102)
+(20, NULL, 1, 450.00, '2026-01-14 10:55:00', 0), -- ID: 20 (Madre ST -> origina IDs 103, 104, 105)
+(21, NULL, 1, 445.00, '2026-01-15 08:45:00', 0), -- ID: 21 (Madre ST -> origina IDs 106, 107, 108)
+(22, NULL, 1, 460.00, '2026-01-15 09:50:00', 0), -- ID: 22 (Madre ST -> origina IDs 109, 110, 111)
+(23, NULL, 1, 450.00, '2026-01-16 10:15:00', 0), -- ID: 23 (Madre ST -> origina IDs 112, 113, 114)
+(24, NULL, 1, 465.00, '2026-01-16 11:25:00', 0), -- ID: 24 (Madre ST -> origina IDs 115, 116, 117)
+(25, NULL, 1, 450.00, '2026-01-17 08:35:00', 0), -- ID: 25 (Madre ST -> origina IDs 118, 119, 120)
+(26, NULL, 1, 455.00, '2026-01-17 09:45:00', 0), -- ID: 26 (Madre ST -> origina IDs 121, 122, 123)
+(27, NULL, 1, 440.00, '2026-01-18 09:00:00', 0), -- ID: 27 (Madre ST -> origina IDs 124, 125, 126)
+(28, NULL, 1, 460.00, '2026-01-18 10:15:00', 0), -- ID: 28 (Madre ST -> origina IDs 127, 128, 129)
+(29, NULL, 1, 450.00, '2026-01-19 08:45:00', 0), -- ID: 29 (Madre ST -> origina IDs 130, 131, 132)
+(30, NULL, 1, 455.00, '2026-01-19 10:05:00', 0), -- ID: 30 (Madre ST -> origina IDs 133, 134, 135)
+(31, NULL, 1, 450.00, '2026-01-20 09:15:00', 0), -- ID: 31 (Madre ST -> origina IDs 136, 137)
+(32, NULL, 1, 455.00, '2026-01-20 10:45:00', 0), -- ID: 32 (Madre ST -> origina IDs 138, 139)
+(33, NULL, 1, 445.00, '2026-01-21 09:30:00', 0), -- ID: 33 (Madre ST -> origina IDs 140, 141)
+(34, NULL, 1, 460.00, '2026-01-21 10:35:00', 0), -- ID: 34 (Madre ST -> origina IDs 142, 143)
+(35, NULL, 1, 450.00, '2026-01-22 08:55:00', 0), -- ID: 35 (Madre ST -> origina IDs 144, 145)
+(36, NULL, 1, 455.00, '2026-01-22 10:15:00', 0), -- ID: 36 (Madre ST -> origina IDs 146, 147)
+(37, NULL, 1, 450.00, '2026-01-23 09:25:00', 0), -- ID: 37 (Madre ST -> origina IDs 148, 149)
+(38, NULL, 1, 460.00, '2026-01-23 10:50:00', 0), -- ID: 38 (Madre ST -> origina IDs 150, 151)
+(39, NULL, 1, 450.00, '2026-01-24 08:45:00', 1), -- ID: 39 (Sangre Total íntegra disponible)
+(40, NULL, 1, 455.00, '2026-01-24 09:55:00', 1), -- ID: 40 (Sangre Total íntegra disponible)
+(41, NULL, 6, 420.00, '2026-01-25 09:45:00', 0), -- ID: 41 (Madre Aféresis -> origina IDs 152, 153)
+(42, NULL, 6, 430.00, '2026-01-25 11:45:00', 0), -- ID: 42 (Madre Aféresis -> origina IDs 154, 155)
+(43, NULL, 6, 415.00, '2026-01-26 09:45:00', 0), -- ID: 43 (Madre Aféresis -> origina IDs 156, 157)
+(44, NULL, 3, 400.00, '2026-01-26 11:30:00', 0), -- ID: 44 (Madre Eritroaféresis -> IDs 158, 159)
+(45, NULL, 6, 220.00, '2026-01-27 10:15:00', 1); -- ID: 45 (Aféresis dosis única disponible)
 GO
 
-/* =========================================================================
-   19. HISTORIAL_SOLICITUDES (120 registros)
-       - Consume exactamente las 120 unidades utilizables con Estado = 0:
-         * Unidades 56 a 85 (30 unidades de Sangre Total)
-         * Unidades 111 a 200 (90 unidades de Hemocomponentes Fraccionados)
-       - Incluye Pacientes puros (Donante_Receptor_ID 86 a 100) y Donantes que
-         también recibieron sangre en otra fecha (Donante_Receptor_ID 1 a 45).
-   ========================================================================= */
-INSERT INTO HistorialSolicitudes (Paciente_ID, Unidad_ID, Direccion_ID, Fecha) VALUES
--- 30 solicitudes de unidades completas (Unidad_ID 56 al 85)
-(91, 56, 1, '2024-02-16 10:00:00'),
-(92, 57, 1, '2024-02-16 11:30:00'),
-(93, 58, 3, '2024-02-17 09:20:00'),
-(94, 59, 3, '2024-02-18 14:15:00'),
-(95, 60, 10, '2024-02-19 16:40:00'),
-(96, 61, 11, '2024-03-03 08:50:00'),
-(97, 62, 12, '2024-03-04 12:10:00'),
-(98, 63, 1, '2024-03-05 15:30:00'),
-(99, 64, 1, '2024-03-06 10:25:00'),
-(100, 65, 3, '2024-03-06 18:00:00'),
-(86, 66, 21, '2024-03-07 09:45:00'),
-(87, 67, 27, '2024-03-08 11:20:00'),
-(88, 68, 28, '2024-03-09 13:50:00'),
-(89, 69, 29, '2024-03-10 08:15:00'),
-(90, 70, 1, '2024-03-10 17:30:00'),
--- Donantes que meses después requirieron transfusión (Donante_Receptor_ID 1 a 15)
-(1, 71, 1, '2024-03-11 10:00:00'),
-(2, 72, 3, '2024-03-11 14:20:00'),
-(3, 73, 10, '2024-03-12 09:10:00'),
-(4, 74, 11, '2024-03-12 16:45:00'),
-(5, 75, 12, '2024-03-13 11:05:00'),
-(6, 76, 1, '2024-03-14 08:30:00'),
-(7, 77, 1, '2024-03-14 15:15:00'),
-(8, 78, 3, '2024-03-15 10:40:00'),
-(9, 79, 21, '2024-03-15 19:00:00'),
-(10, 80, 1, '2024-03-16 09:25:00'),
-(11, 81, 3, '2024-03-16 13:10:00'),
-(12, 82, 10, '2024-03-17 11:50:00'),
-(13, 83, 11, '2024-03-18 08:40:00'),
-(14, 84, 12, '2024-03-18 17:20:00'),
-(15, 85, 1, '2024-03-19 10:30:00'),
--- 90 solicitudes de hemocomponentes fraccionados (Unidad_ID 111 al 200)
-(91, 111, 1, '2024-01-12 08:30:00'),
-(91, 112, 1, '2024-01-12 09:00:00'),
-(92, 113, 1, '2024-01-12 10:15:00'),
-(93, 114, 3, '2024-01-12 11:40:00'),
-(93, 115, 3, '2024-01-12 12:10:00'),
-(94, 116, 10, '2024-01-13 09:20:00'),
-(95, 117, 11, '2024-01-13 14:00:00'),
-(96, 118, 12, '2024-01-13 16:30:00'),
-(97, 119, 1, '2024-01-14 08:45:00'),
-(98, 120, 1, '2024-01-14 10:50:00'),
-(99, 121, 3, '2024-01-14 15:15:00'),
-(100, 122, 21, '2024-01-15 09:30:00'),
-(100, 123, 21, '2024-01-15 10:00:00'),
-(86, 124, 1, '2024-01-15 13:45:00'),
-(87, 125, 3, '2024-01-16 08:20:00'),
-(88, 126, 10, '2024-01-16 11:10:00'),
-(89, 127, 11, '2024-01-16 16:05:00'),
-(90, 128, 12, '2024-01-17 09:40:00'),
-(16, 129, 1, '2024-01-17 14:25:00'),
-(17, 130, 1, '2024-01-18 08:50:00'),
-(18, 131, 3, '2024-01-18 11:30:00'),
-(19, 132, 27, '2024-01-18 17:00:00'),
-(20, 133, 28, '2024-01-19 09:15:00'),
-(21, 134, 29, '2024-01-19 13:20:00'),
-(22, 135, 1, '2024-01-20 08:40:00'),
-(23, 136, 1, '2024-01-20 10:55:00'),
-(24, 137, 3, '2024-01-20 15:10:00'),
-(25, 138, 10, '2024-01-21 09:05:00'),
-(26, 139, 11, '2024-01-21 12:30:00'),
-(27, 140, 12, '2024-01-21 16:45:00'),
-(28, 141, 1, '2024-01-22 08:15:00'),
-(29, 142, 1, '2024-01-22 11:00:00'),
-(30, 143, 3, '2024-01-22 14:35:00'),
-(31, 144, 21, '2024-01-23 09:50:00'),
-(32, 145, 1, '2024-01-23 13:15:00'),
-(33, 146, 3, '2024-01-23 17:40:00'),
-(34, 147, 10, '2024-01-24 08:30:00'),
-(35, 148, 11, '2024-01-24 11:20:00'),
-(36, 149, 12, '2024-01-24 15:50:00'),
-(37, 150, 1, '2024-01-25 09:10:00'),
-(38, 151, 1, '2024-01-25 12:40:00'),
-(39, 152, 3, '2024-01-25 16:15:00'),
-(40, 153, 27, '2024-01-26 08:45:00'),
-(41, 154, 28, '2024-01-26 11:30:00'),
-(42, 155, 29, '2024-01-26 14:55:00'),
-(43, 156, 30, '2024-01-27 09:20:00'),
-(44, 157, 1, '2024-01-27 13:05:00'),
-(45, 158, 1, '2024-01-27 17:30:00'),
-(91, 159, 3, '2024-01-28 08:50:00'),
-(92, 160, 10, '2024-01-28 11:15:00'),
-(93, 161, 11, '2024-01-28 15:40:00'),
-(94, 162, 12, '2024-01-29 09:00:00'),
-(95, 163, 1, '2024-01-29 12:25:00'),
-(96, 164, 1, '2024-01-29 16:50:00'),
-(97, 165, 3, '2024-01-30 08:35:00'),
-(98, 166, 21, '2024-01-30 11:45:00'),
-(99, 167, 1, '2024-01-30 14:10:00'),
-(100, 168, 3, '2024-01-31 09:30:00'),
-(86, 169, 10, '2024-01-31 13:00:00'),
-(87, 170, 11, '2024-01-31 16:20:00'),
-(88, 171, 12, '2024-02-01 08:40:00'),
-(89, 172, 1, '2024-02-01 11:10:00'),
-(90, 173, 1, '2024-02-01 15:35:00'),
-(1, 174, 3, '2024-02-02 09:15:00'),
-(2, 175, 21, '2024-02-02 12:45:00'),
-(3, 176, 1, '2024-02-02 17:00:00'),
-(4, 177, 3, '2024-02-03 08:25:00'),
-(5, 178, 10, '2024-02-03 11:50:00'),
-(6, 179, 11, '2024-02-03 14:30:00'),
-(7, 180, 12, '2024-02-04 09:05:00'),
-(8, 181, 1, '2024-02-04 12:20:00'),
-(9, 182, 1, '2024-02-04 16:40:00'),
-(10, 183, 3, '2024-02-05 08:55:00'),
-(11, 184, 27, '2024-02-05 11:35:00'),
-(12, 185, 28, '2024-02-05 15:10:00'),
-(13, 186, 29, '2024-02-06 09:40:00'),
-(14, 187, 1, '2024-02-06 13:15:00'),
-(15, 188, 1, '2024-02-06 17:25:00'),
-(16, 189, 3, '2024-02-07 08:30:00'),
-(17, 190, 10, '2024-02-07 11:05:00'),
-(18, 191, 11, '2024-02-07 14:45:00'),
-(19, 192, 12, '2024-02-08 09:20:00'),
-(20, 193, 1, '2024-02-08 12:50:00'),
-(21, 194, 1, '2024-02-08 16:15:00'),
-(22, 195, 3, '2024-02-09 08:45:00'),
-(23, 196, 21, '2024-02-09 11:30:00'),
-(24, 197, 1, '2024-02-09 15:00:00'),
-(25, 198, 3, '2024-02-10 09:10:00'),
-(26, 199, 10, '2024-02-10 13:40:00'),
-(27, 200, 1, '2024-02-10 17:10:00');
+-- NIVEL 1 (IDs 46..159): FRACCIONAMIENTO PRIMARIO (Hijas directas de Unidades Madre 1..38 y 41..44)
+-- Cada bolsa cuádruple (IDs 1..30) genera: 1 Eritrocitos (CE/CEL), 1 Plasma (PFC) y 1 Plaquetas (CPE)
+INSERT INTO UnidadExtraida (Extraccion_ID, UnidadOrigen_ID, TipoComponente_ID, VolumenML, FechaObtencion, Estado) VALUES
+(1, 1, 2, 260.00, '2026-01-05 11:00:00', 0),   -- ID: 46 (CE hijo de 1 -> sub-fraccionado en Pediátricas 160, 161, 162)
+(1, 1, 4, 200.00, '2026-01-05 11:00:00', 0),   -- ID: 47 (PFC hijo de 1 -> sub-fraccionado en CRIO 166 y PLC 167)
+(1, 1, 5, 55.00, '2026-01-05 11:00:00', 0),    -- ID: 48 (CPE hijo de 1 -> transfundido en Solicitud 1)
+(2, 2, 2, 255.00, '2026-01-05 11:30:00', 0),   -- ID: 49 (CE hijo de 2 -> transfundido en Solicitud 2)
+(2, 2, 4, 205.00, '2026-01-05 11:30:00', 0),   -- ID: 50 (PFC hijo de 2 -> sub-fraccionado en CRIO 168 y PLC 169)
+(2, 2, 5, 52.00, '2026-01-05 11:30:00', 0),    -- ID: 51 (CPE hijo de 2 -> transfundido en Solicitud 3)
+(3, 3, 2, 268.00, '2026-01-06 11:00:00', 0),   -- ID: 52 (CE hijo de 3 -> transfundido en Solicitud 4)
+(3, 3, 4, 210.00, '2026-01-06 11:00:00', 0),   -- ID: 53 (PFC hijo de 3 -> transfundido en Solicitud 5)
+(3, 3, 5, 58.00, '2026-01-06 11:00:00', 0),    -- ID: 54 (CPE hijo de 3 -> transfundido en Solicitud 6)
+(4, 4, 2, 258.00, '2026-01-06 11:45:00', 0),   -- ID: 55 (CE hijo de 4 -> transfundido en Solicitud 7)
+(4, 4, 4, 198.00, '2026-01-06 11:45:00', 1),   -- ID: 56 (PFC hijo de 4 -> disponible)
+(4, 4, 5, 54.00, '2026-01-06 11:45:00', 0),    -- ID: 57 (CPE hijo de 4 -> transfundido en Solicitud 8)
+(5, 5, 3, 250.00, '2026-01-07 11:15:00', 0),   -- ID: 58 (CEL O- hijo de 5 -> sub-fraccionado en Pediátricas 163, 164, 165)
+(5, 5, 4, 205.00, '2026-01-07 11:15:00', 0),   -- ID: 59 (PFC hijo de 5 -> transfundido en Solicitud 9)
+(5, 5, 5, 56.00, '2026-01-07 11:15:00', 0),    -- ID: 60 (CPE hijo de 5 -> transfundido en Solicitud 10)
+(6, 6, 2, 260.00, '2026-01-07 13:00:00', 0),   -- ID: 61 (CE hijo de 6 -> lavado en CELV 170)
+(6, 6, 4, 200.00, '2026-01-07 13:00:00', 0),   -- ID: 62 (PFC hijo de 6 -> transfundido en Solicitud 11)
+(6, 6, 5, 53.00, '2026-01-07 13:00:00', 0),    -- ID: 63 (CPE hijo de 6 -> transfundido en Solicitud 12)
+(7, 7, 2, 252.00, '2026-01-08 12:15:00', 0),   -- ID: 64 (CE hijo de 7 -> transfundido en Solicitud 13)
+(7, 7, 4, 195.00, '2026-01-08 12:15:00', 1),   -- ID: 65 (PFC hijo de 7 -> disponible)
+(7, 7, 5, 50.00, '2026-01-08 12:15:00', 0),    -- ID: 66 (CPE hijo de 7 -> transfundido en Solicitud 14)
+(8, 8, 2, 270.00, '2026-01-08 13:00:00', 0),   -- ID: 67 (CE hijo de 8 -> transfundido en Solicitud 15)
+(8, 8, 4, 212.00, '2026-01-08 13:00:00', 0),   -- ID: 68 (PFC hijo de 8 -> transfundido en Solicitud 16)
+(8, 8, 5, 58.00, '2026-01-08 13:00:00', 1),    -- ID: 69 (CPE hijo de 8 -> disponible)
+(9, 9, 2, 256.00, '2026-01-09 12:00:00', 0),   -- ID: 70 (CE hijo de 9 -> transfundido en Solicitud 17)
+(9, 9, 4, 202.00, '2026-01-09 12:00:00', 1),   -- ID: 71 (PFC hijo de 9 -> disponible)
+(9, 9, 5, 55.00, '2026-01-09 12:00:00', 0),    -- ID: 72 (CPE hijo de 9 -> transfundido en Solicitud 18)
+(10, 10, 3, 255.00, '2026-01-09 13:15:00', 0), -- ID: 73 (CEL hijo de 10 -> transfundido en Solicitud 19)
+(10, 10, 4, 208.00, '2026-01-09 13:15:00', 1), -- ID: 74 (PFC hijo de 10 -> disponible)
+(10, 10, 5, 57.00, '2026-01-09 13:15:00', 1),  -- ID: 75 (CPE hijo de 10 -> disponible)
+(11, 11, 2, 260.00, '2026-01-10 11:00:00', 0), -- ID: 76 (CE hijo de 11 -> transfundido en Solicitud 20)
+(11, 11, 4, 198.00, '2026-01-10 11:00:00', 0), -- ID: 77 (PFC hijo de 11 -> transfundido en Solicitud 21)
+(11, 11, 5, 54.00, '2026-01-10 11:00:00', 1),  -- ID: 78 (CPE hijo de 11 -> disponible)
+(12, 12, 2, 262.00, '2026-01-10 12:00:00', 0), -- ID: 79 (CE hijo de 12 -> transfundido en Solicitud 22)
+(12, 12, 4, 204.00, '2026-01-10 12:00:00', 1), -- ID: 80 (PFC hijo de 12 -> disponible)
+(12, 12, 5, 55.00, '2026-01-10 12:00:00', 0),  -- ID: 81 (CPE hijo de 12 -> transfundido en Solicitud 23)
+(13, 13, 2, 250.00, '2026-01-11 11:45:00', 0), -- ID: 82 (CE hijo de 13 -> transfundido en Solicitud 24)
+(13, 13, 4, 192.00, '2026-01-11 11:45:00', 1), -- ID: 83 (PFC hijo de 13 -> disponible)
+(13, 13, 5, 51.00, '2026-01-11 11:45:00', 1),  -- ID: 84 (CPE hijo de 13 -> disponible)
+(14, 14, 3, 258.00, '2026-01-11 12:45:00', 0), -- ID: 85 (CEL hijo de 14 -> transfundido en Solicitud 25)
+(14, 14, 4, 206.00, '2026-01-11 12:45:00', 0), -- ID: 86 (PFC hijo de 14 -> transfundido en Solicitud 26)
+(14, 14, 5, 56.00, '2026-01-11 12:45:00', 1),  -- ID: 87 (CPE hijo de 14 -> disponible)
+(15, 15, 2, 257.00, '2026-01-12 11:15:00', 0), -- ID: 88 (CE hijo de 15 -> transfundido en Solicitud 27)
+(15, 15, 4, 200.00, '2026-01-12 11:15:00', 1), -- ID: 89 (PFC hijo de 15 -> disponible)
+(15, 15, 5, 54.00, '2026-01-12 11:15:00', 0),  -- ID: 90 (CPE hijo de 15 -> transfundido en Solicitud 28)
+(16, 16, 2, 263.00, '2026-01-12 12:30:00', 0), -- ID: 91 (CE hijo de 16 -> transfundido en Solicitud 29)
+(16, 16, 4, 202.00, '2026-01-12 12:30:00', 1), -- ID: 92 (PFC hijo de 16 -> disponible)
+(16, 16, 5, 55.00, '2026-01-12 12:30:00', 1),  -- ID: 93 (CPE hijo de 16 -> disponible)
+(17, 17, 2, 254.00, '2026-01-13 11:00:00', 0), -- ID: 94 (CE hijo de 17 -> transfundido en Solicitud 30)
+(17, 17, 4, 196.00, '2026-01-13 11:00:00', 1), -- ID: 95 (PFC hijo de 17 -> disponible)
+(17, 17, 5, 52.00, '2026-01-13 11:00:00', 1),  -- ID: 96 (CPE hijo de 17 -> disponible)
+(18, 18, 2, 266.00, '2026-01-13 12:15:00', 0), -- ID: 97 (CE hijo de 18 -> transfundido en Solicitud 31)
+(18, 18, 4, 208.00, '2026-01-13 12:15:00', 0), -- ID: 98 (PFC hijo de 18 -> transfundido en Solicitud 32)
+(18, 18, 5, 57.00, '2026-01-13 12:15:00', 1),  -- ID: 99 (CPE hijo de 18 -> disponible)
+(19, 19, 2, 259.00, '2026-01-14 12:00:00', 0), -- ID: 100 (CE hijo de 19 -> transfundido en Solicitud 33)
+(19, 19, 4, 200.00, '2026-01-14 12:00:00', 1), -- ID: 101 (PFC hijo de 19 -> disponible)
+(19, 19, 5, 54.00, '2026-01-14 12:00:00', 0),  -- ID: 102 (CPE hijo de 19 -> transfundido en Solicitud 34)
+(20, 20, 2, 258.00, '2026-01-14 13:10:00', 0), -- ID: 103 (CE hijo de 20 -> transfundido en Solicitud 35)
+(20, 20, 4, 201.00, '2026-01-14 13:10:00', 1), -- ID: 104 (PFC hijo de 20 -> disponible)
+(20, 20, 5, 55.00, '2026-01-14 13:10:00', 1),  -- ID: 105 (CPE hijo de 20 -> disponible)
+(21, 21, 2, 253.00, '2026-01-15 11:00:00', 0), -- ID: 106 (CE hijo de 21 -> transfundido en Solicitud 36)
+(21, 21, 4, 195.00, '2026-01-15 11:00:00', 1), -- ID: 107 (PFC hijo de 21 -> disponible)
+(21, 21, 5, 53.00, '2026-01-15 11:00:00', 1),  -- ID: 108 (CPE hijo de 21 -> disponible)
+(22, 22, 3, 256.00, '2026-01-15 12:00:00', 0), -- ID: 109 (CEL hijo de 22 -> transfundido en Solicitud 37)
+(22, 22, 4, 207.00, '2026-01-15 12:00:00', 1), -- ID: 110 (PFC hijo de 22 -> disponible)
+(22, 22, 5, 56.00, '2026-01-15 12:00:00', 1),  -- ID: 111 (CPE hijo de 22 -> disponible)
+(23, 23, 2, 260.00, '2026-01-16 12:30:00', 0), -- ID: 112 (CE hijo de 23 -> transfundido en Solicitud 38)
+(23, 23, 4, 199.00, '2026-01-16 12:30:00', 1), -- ID: 113 (PFC hijo de 23 -> disponible)
+(23, 23, 5, 54.00, '2026-01-16 12:30:00', 1),  -- ID: 114 (CPE hijo de 23 -> disponible)
+(24, 24, 2, 269.00, '2026-01-16 13:30:00', 1), -- ID: 115 (CE hijo de 24 -> disponible)
+(24, 24, 4, 210.00, '2026-01-16 13:30:00', 1), -- ID: 116 (PFC hijo de 24 -> disponible)
+(24, 24, 5, 58.00, '2026-01-16 13:30:00', 1),  -- ID: 117 (CPE hijo de 24 -> disponible)
+(25, 25, 2, 258.00, '2026-01-17 11:00:00', 1), -- ID: 118 (CE hijo de 25 -> disponible)
+(25, 25, 4, 200.00, '2026-01-17 11:00:00', 1), -- ID: 119 (PFC hijo de 25 -> disponible)
+(25, 25, 5, 55.00, '2026-01-17 11:00:00', 1),  -- ID: 120 (CPE hijo de 25 -> disponible)
+(26, 26, 2, 261.00, '2026-01-17 12:15:00', 1), -- ID: 121 (CE hijo de 26 -> disponible)
+(26, 26, 4, 203.00, '2026-01-17 12:15:00', 1), -- ID: 122 (PFC hijo de 26 -> disponible)
+(26, 26, 5, 55.00, '2026-01-17 12:15:00', 1),  -- ID: 123 (CPE hijo de 26 -> disponible)
+(27, 27, 2, 251.00, '2026-01-18 11:30:00', 1), -- ID: 124 (CE hijo de 27 -> disponible)
+(27, 27, 4, 193.00, '2026-01-18 11:30:00', 1), -- ID: 125 (PFC hijo de 27 -> disponible)
+(27, 27, 5, 51.00, '2026-01-18 11:30:00', 1),  -- ID: 126 (CPE hijo de 27 -> disponible)
+(28, 28, 2, 265.00, '2026-01-18 12:30:00', 1), -- ID: 127 (CE hijo de 28 -> disponible)
+(28, 28, 4, 206.00, '2026-01-18 12:30:00', 1), -- ID: 128 (PFC hijo de 28 -> disponible)
+(28, 28, 5, 56.00, '2026-01-18 12:30:00', 1),  -- ID: 129 (CPE hijo de 28 -> disponible)
+(29, 29, 2, 257.00, '2026-01-19 11:00:00', 1), -- ID: 130 (CE hijo de 29 -> disponible)
+(29, 29, 4, 199.00, '2026-01-19 11:00:00', 1), -- ID: 131 (PFC hijo de 29 -> disponible)
+(29, 29, 5, 54.00, '2026-01-19 11:00:00', 1),  -- ID: 132 (CPE hijo de 29 -> disponible)
+(30, 30, 2, 262.00, '2026-01-19 12:15:00', 1), -- ID: 133 (CE hijo de 30 -> disponible)
+(30, 30, 4, 204.00, '2026-01-19 12:15:00', 1), -- ID: 134 (PFC hijo de 30 -> disponible)
+(30, 30, 5, 55.00, '2026-01-19 12:15:00', 1),  -- ID: 135 (CPE hijo de 30 -> disponible)
+(31, 31, 2, 258.00, '2026-01-20 11:30:00', 1), -- ID: 136 (CE hijo de 31 -> disponible)
+(31, 31, 4, 200.00, '2026-01-20 11:30:00', 1), -- ID: 137 (PFC hijo de 31 -> disponible)
+(32, 32, 2, 261.00, '2026-01-20 12:45:00', 1), -- ID: 138 (CE hijo de 32 -> disponible)
+(32, 32, 4, 202.00, '2026-01-20 12:45:00', 1), -- ID: 139 (PFC hijo de 32 -> disponible)
+(33, 33, 2, 254.00, '2026-01-21 11:30:00', 1), -- ID: 140 (CE hijo de 33 -> disponible)
+(33, 33, 4, 196.00, '2026-01-21 11:30:00', 1), -- ID: 141 (PFC hijo de 33 -> disponible)
+(34, 34, 2, 264.00, '2026-01-21 12:30:00', 1), -- ID: 142 (CE hijo de 34 -> disponible)
+(34, 34, 4, 206.00, '2026-01-21 12:30:00', 1), -- ID: 143 (PFC hijo de 34 -> disponible)
+(35, 35, 2, 258.00, '2026-01-22 11:00:00', 1), -- ID: 144 (CE hijo de 35 -> disponible)
+(35, 35, 4, 200.00, '2026-01-22 11:00:00', 1), -- ID: 145 (PFC hijo de 35 -> disponible)
+(36, 36, 2, 260.00, '2026-01-22 12:30:00', 1), -- ID: 146 (CE hijo de 36 -> disponible)
+(36, 36, 4, 203.00, '2026-01-22 12:30:00', 1), -- ID: 147 (PFC hijo de 36 -> disponible)
+(37, 37, 2, 257.00, '2026-01-23 11:30:00', 1), -- ID: 148 (CE hijo de 37 -> disponible)
+(37, 37, 4, 198.00, '2026-01-23 11:30:00', 1), -- ID: 149 (PFC hijo de 37 -> disponible)
+(38, 38, 2, 265.00, '2026-01-23 12:45:00', 1), -- ID: 150 (CE hijo de 38 -> disponible)
+(38, 38, 4, 205.00, '2026-01-23 12:45:00', 1), -- ID: 151 (PFC hijo de 38 -> disponible)
+(41, 41, 6, 210.00, '2026-01-25 10:00:00', 0), -- ID: 152 (CPA Dosis 1 hija de 41 -> Solicitud 39)
+(41, 41, 6, 210.00, '2026-01-25 10:00:00', 0), -- ID: 153 (CPA Dosis 2 hija de 41 -> Solicitud 40)
+(42, 42, 6, 215.00, '2026-01-25 12:00:00', 0), -- ID: 154 (CPA Dosis 1 hija de 42 -> Solicitud 41)
+(42, 42, 6, 215.00, '2026-01-25 12:00:00', 1), -- ID: 155 (CPA Dosis 2 hija de 42 -> disponible)
+(43, 43, 6, 207.50, '2026-01-26 10:00:00', 0), -- ID: 156 (CPA Dosis 1 hija de 43 -> Solicitud 42)
+(43, 43, 6, 207.50, '2026-01-26 10:00:00', 1), -- ID: 157 (CPA Dosis 2 hija de 43 -> disponible)
+(44, 44, 3, 200.00, '2026-01-26 11:45:00', 0), -- ID: 158 (CEL Dosis 1 hija de 44 -> Solicitud 43)
+(44, 44, 3, 200.00, '2026-01-26 11:45:00', 1); -- ID: 159 (CEL Dosis 2 hija de 44 -> disponible)
+GO
+
+-- NIVEL 2 (IDs 160..170): SUB-FRACCIONAMIENTO SECUNDARIO (Nietas de Sangre Total)
+-- Alícuotas Pediátricas (de CE ID 46 y CEL ID 58), Crioprecipitado + PLC (de PFC IDs 47 y 50) y Lavado (de CE ID 61)
+INSERT INTO UnidadExtraida (Extraccion_ID, UnidadOrigen_ID, TipoComponente_ID, VolumenML, FechaObtencion, Estado) VALUES
+(1, 46, 9, 85.00, '2026-01-06 08:00:00', 0),  -- ID: 160 (Alícuota Pediátrica 1 hija de CE 46 -> Solicitud 44)
+(1, 46, 9, 85.00, '2026-01-06 08:00:00', 0),  -- ID: 161 (Alícuota Pediátrica 2 hija de CE 46 -> Solicitud 45)
+(1, 46, 9, 85.00, '2026-01-06 08:00:00', 1),  -- ID: 162 (Alícuota Pediátrica 3 hija de CE 46 -> disponible)
+(5, 58, 9, 80.00, '2026-01-08 08:00:00', 0),  -- ID: 163 (Alícuota Pediátrica O- 1 hija de CEL 58 -> Solicitud 46)
+(5, 58, 9, 80.00, '2026-01-08 08:00:00', 0),  -- ID: 164 (Alícuota Pediátrica O- 2 hija de CEL 58 -> Solicitud 47)
+(5, 58, 9, 80.00, '2026-01-08 08:00:00', 1),  -- ID: 165 (Alícuota Pediátrica O- 3 hija de CEL 58 -> disponible)
+(1, 47, 7, 20.00, '2026-01-06 09:30:00', 0),  -- ID: 166 (Crioprecipitado hijo de PFC 47 -> Solicitud 48)
+(1, 47, 8, 180.00, '2026-01-06 09:30:00', 1), -- ID: 167 (Plasma Libre de Crio hijo de PFC 47 -> disponible)
+(2, 50, 7, 22.00, '2026-01-06 10:00:00', 0),  -- ID: 168 (Crioprecipitado hijo de PFC 50 -> Solicitud 49)
+(2, 50, 8, 183.00, '2026-01-06 10:00:00', 1), -- ID: 169 (Plasma Libre de Crio hijo de PFC 50 -> disponible)
+(6, 61, 10, 240.00, '2026-01-08 07:30:00', 0);-- ID: 170 (Eritrocitos Lavados hijo de CE 61 -> Solicitud 50)
+GO
+
+-- 17. HISTORIALSOLICITUDES (50 registros: despacho transfusional con Unidad_ID único)
+INSERT INTO HistorialSolicitudes (Donante_Receptor_ID, Unidad_ID, Direccion_ID, Fecha) VALUES
+(58, 48, 2, '2026-01-06 14:00:00'),  -- ID: 1 (Plaquetas a HRSJD Tarija)
+(51, 49, 2, '2026-01-06 15:30:00'),  -- ID: 2 (Eritrocitos a HRSJD Tarija)
+(58, 51, 2, '2026-01-06 16:00:00'),  -- ID: 3 (Plaquetas a HRSJD Tarija)
+(52, 52, 3, '2026-01-07 09:00:00'),  -- ID: 4 (Eritrocitos a Hospital Obrero CNS)
+(54, 53, 2, '2026-01-07 10:30:00'),  -- ID: 5 (PFC a HRSJD Tarija)
+(53, 54, 7, '2026-01-07 11:45:00'),  -- ID: 6 (Plaquetas a Instituto Oncológico Tarija)
+(55, 55, 11, '2026-01-07 14:20:00'), -- ID: 7 (Eritrocitos a Hospital San Antonio)
+(61, 57, 7, '2026-01-08 08:30:00'),  -- ID: 8 (Plaquetas a Instituto Oncológico Tarija)
+(63, 59, 2, '2026-01-08 09:45:00'),  -- ID: 9 (PFC a HRSJD Tarija)
+(67, 60, 3, '2026-01-08 11:00:00'),  -- ID: 10 (Plaquetas a Hospital Obrero CNS)
+(62, 62, 2, '2026-01-08 15:10:00'),  -- ID: 11 (PFC a HRSJD Tarija)
+(68, 63, 7, '2026-01-09 08:40:00'),  -- ID: 12 (Plaquetas a Instituto Oncológico Tarija)
+(57, 64, 6, '2026-01-09 10:00:00'),  -- ID: 13 (Eritrocitos a Clínica Prost)
+(53, 66, 7, '2026-01-09 11:30:00'),  -- ID: 14 (Plaquetas a Instituto Oncológico Tarija)
+(59, 67, 2, '2026-01-09 14:15:00'),  -- ID: 15 (Eritrocitos a HRSJD Tarija)
+(54, 68, 2, '2026-01-10 09:20:00'),  -- ID: 16 (PFC a HRSJD Tarija)
+(60, 70, 3, '2026-01-10 10:45:00'),  -- ID: 17 (Eritrocitos a Hospital Obrero CNS)
+(61, 72, 7, '2026-01-10 12:00:00'),  -- ID: 18 (Plaquetas a Instituto Oncológico Tarija)
+(65, 73, 2, '2026-01-11 08:30:00'),  -- ID: 19 (Eritrocitos Leucorreducidos O- a HRSJD)
+(66, 76, 6, '2026-01-11 10:15:00'),  -- ID: 20 (Eritrocitos a Clínica Prost)
+(63, 77, 2, '2026-01-11 11:50:00'),  -- ID: 21 (PFC a HRSJD Tarija)
+(69, 79, 3, '2026-01-12 09:00:00'),  -- ID: 22 (Eritrocitos a Hospital Obrero CNS)
+(67, 81, 3, '2026-01-12 10:30:00'),  -- ID: 23 (Plaquetas a Hospital Obrero CNS)
+(70, 82, 9, '2026-01-12 14:00:00'),  -- ID: 24 (Eritrocitos a Clínica CIES Tarija)
+(71, 85, 12, '2026-01-13 08:45:00'), -- ID: 25 (CEL a Hospital Rubén Zelaya Yacuiba)
+(62, 86, 2, '2026-01-13 10:10:00'),  -- ID: 26 (PFC a HRSJD Tarija)
+(72, 88, 14, '2026-01-13 11:30:00'), -- ID: 27 (Eritrocitos a Hospital Virgen de Chaguaya Bermejo)
+(68, 90, 7, '2026-01-14 08:20:00'),  -- ID: 28 (Plaquetas a Instituto Oncológico Tarija)
+(73, 91, 15, '2026-01-14 09:50:00'), -- ID: 29 (Eritrocitos a Hospital Básico Villa Montes)
+(74, 94, 2, '2026-01-14 11:15:00'),  -- ID: 30 (Eritrocitos a HRSJD Tarija)
+(75, 97, 2, '2026-01-15 08:30:00'),  -- ID: 31 (Eritrocitos a HRSJD Tarija)
+(63, 98, 2, '2026-01-15 09:45:00'),  -- ID: 32 (PFC a HRSJD Tarija)
+(76, 100, 3, '2026-01-15 11:00:00'), -- ID: 33 (Eritrocitos a Hospital Obrero CNS)
+(58, 102, 2, '2026-01-15 14:30:00'), -- ID: 34 (Plaquetas a HRSJD Tarija)
+(77, 103, 6, '2026-01-16 09:00:00'), -- ID: 35 (Eritrocitos a Clínica Prost)
+(78, 106, 11, '2026-01-16 10:20:00'),-- ID: 36 (Eritrocitos a Hospital San Antonio)
+(51, 109, 2, '2026-01-16 11:40:00'), -- ID: 37 (CEL a HRSJD Tarija)
+(52, 112, 3, '2026-01-17 08:30:00'), -- ID: 38 (Eritrocitos a Hospital Obrero CNS)
+(53, 152, 7, '2026-01-26 08:30:00'), -- ID: 39 (Plaquetas por Aféresis a Instituto Oncológico)
+(61, 153, 7, '2026-01-26 09:15:00'), -- ID: 40 (Plaquetas por Aféresis a Instituto Oncológico)
+(68, 154, 7, '2026-01-26 11:00:00'), -- ID: 41 (Plaquetas por Aféresis a Instituto Oncológico)
+(67, 156, 3, '2026-01-27 08:45:00'), -- ID: 42 (Plaquetas por Aféresis a Hospital Obrero CNS)
+(59, 158, 2, '2026-01-27 10:00:00'), -- ID: 43 (Eritroaféresis a HRSJD Tarija)
+(79, 160, 2, '2026-01-06 11:00:00'), -- ID: 44 (Alícuota Pediátrica 1 a Neonatología HRSJD)
+(79, 161, 2, '2026-01-08 11:00:00'), -- ID: 45 (Alícuota Pediátrica 2 a Neonatología HRSJD)
+(80, 163, 2, '2026-01-08 16:00:00'), -- ID: 46 (Alícuota Pediátrica O- 1 a Pediatría HRSJD)
+(80, 164, 2, '2026-01-10 16:00:00'), -- ID: 47 (Alícuota Pediátrica O- 2 a Pediatría HRSJD)
+(56, 166, 2, '2026-01-07 08:00:00'), -- ID: 48 (Crioprecipitado a Paciente Hemofilia A en HRSJD)
+(64, 168, 3, '2026-01-07 09:30:00'), -- ID: 49 (Crioprecipitado a Paciente Hemofilia A en CNS)
+(60, 170, 3, '2026-01-08 09:00:00'); -- ID: 50 (Eritrocitos Lavados a Paciente Renal en CNS)
 GO
