@@ -66,18 +66,8 @@ y trazabilidad.
                                       organizadas por secciones e
                                       integrantes.
 
-  `ConsultasJael.sql`                 Contiene consultas relacionadas con
-                                      cobertura del personal,
-                                      extracciones sobre el promedio,
-                                      donantes con mayor volumen
-                                      histórico y resumen antropométrico.
   -----------------------------------------------------------------------
 
-**Nota sobre los nombres:** si el repositorio utiliza variantes como
-`01-CreacionDB(2).sql` o `04-Views(1).sql`, esos sufijos suelen aparecer
-al descargar archivos duplicados. Se recomienda conservar una sola
-versión definitiva de cada script y utilizar nombres consistentes con la
-tabla anterior.
 
 ## Modelo de datos
 
@@ -117,7 +107,7 @@ de continuar:
 4.  `04-Views.sql` --- creación de vistas.
 5.  `05-Funciones.sql` --- creación de funciones.
 6.  `06-Procedimientos.sql` --- creación de procedimientos almacenados.
-7.  `07-Consultas.sql` y `ConsultasJael.sql` --- ejecución de consultas
+7.  `07-Consultas.sql` --- ejecución de consultas
     para revisar la información.
 
 Para ejecutar cada archivo en SSMS, abrirlo, seleccionar la base de
