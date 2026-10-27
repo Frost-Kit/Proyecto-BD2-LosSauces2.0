@@ -34,6 +34,46 @@ FROM Direccion AS D
     INNER JOIN Ciudad AS C ON C.Ciudad_ID = D.Ciudad_ID
     INNER JOIN Pais AS P ON P.Pais_ID = C.Pais_ID;
 GO
+-- Pa probar -> SELECT * FROM V_DireccionesCompletas
+
+-- Para ver todo sobre las unidades hijas
+CREATE OR ALTER VIEW V_UnidadesHijasInfoCompleta
+AS
+SELECT
+    -- Donante y fecha de extracción
+    CONCAT(
+        PD.Nombre, ' ', PD.ApPaterno, ' ', PD.ApMaterno
+    ) AS Donante,
+    FORMAT(E.Fecha,'dd/MM/yyyy HH:mm') AS FechaExtraccion,
+    -- Unidad hija
+    H.Unidad_ID AS ID_UnidadHija,
+    TH.TipoComponente AS TipoComponenteHija,
+    H.Estado AS Estado,
+    H.FechaObtencion AS FechaFragmentacion,
+    H.VolumenML AS VolumenUnidadML,
+    -- Unidad madre
+    M.Unidad_ID AS ID_UnidadMadre,
+    TM.TipoComponente AS TipoComponenteMadre
+
+FROM UnidadExtraida AS H
+    -- auto-Join: la hija referencia a la madre
+    INNER JOIN UnidadExtraida AS M
+        ON M.Unidad_ID = H.UnidadOrigen_ID
+    INNER JOIN TipoComponente AS TH
+        ON TH.TipoComponente_ID = H.TipoComponente_ID
+    INNER JOIN TipoComponente AS TM
+        ON TM.TipoComponente_ID = M.TipoComponente_ID
+    -- Extracción de la unidad madre
+    INNER JOIN Extraccion AS E
+        ON E.Extraccion_ID = M.Extraccion_ID
+    -- Donante
+    INNER JOIN Donante_Receptor AS D
+        ON D.Donante_Receptor_ID = E.Donante_Receptor_ID
+    INNER JOIN Persona AS PD
+        ON PD.Persona_ID = D.Persona_ID
+GO
+-- Pa probar -> SELECT * FROM V_UnidadesHijasInfoCompleta
+
 /*=======================================================================================================================================
     TODO: Pablo (Vistas)
 */

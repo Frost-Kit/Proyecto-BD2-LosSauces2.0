@@ -16,10 +16,10 @@ BEGIN
 END;
 GO
 /*=======================================================================================================================================
-    TODO: Pablo (Funciones)
-*/
--- Función para la Consulta 1: Detección mensual de patologías dinámico
-CREATE OR ALTER FUNCTION DBO.Fn_PatologiasMensuales (@MinCasos INT)
+    TODO: Pablo (Función de Tabla en Línea)
+=======================================================================================================================================*/
+
+CREATE FUNCTION dbo.Fn_PatologiasMensuales (@MinCasos INT)
 RETURNS TABLE
 AS
 RETURN (
@@ -34,6 +34,11 @@ RETURN (
     GROUP BY YEAR(c.Fecha), MONTH(c.Fecha), e.Gravedad
     HAVING COUNT(ce.Enfermedad_ID) >= @MinCasos
 );
+GO
+
+-- Prueba de la función
+SELECT *
+FROM dbo.Fn_PatologiasMensuales(4);
 GO
 /*======================================================================================================================================
 THIERRY 

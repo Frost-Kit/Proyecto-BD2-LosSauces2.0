@@ -10,7 +10,69 @@ from Persona p
 Group by p.nombre, p.ApPaterno, p.ApMaterno, p.DocumentoDeIdentidad, dr.GrupoSanguineo, dr.FactorRH
 Having count(h.Unidad_ID) > 2;
 
-/*=======================================================================================================================================
+/* =================JAEL==========================*/
+USE BancoSangre;
+GO
+--1 Cobertura de atencion del personal de salud--
+SELECT
+    p.Nombre + '' + p.ApPaterno + ISNULL('' + p.ApMaterno, '') AS NombreTrabajador, c.Nombre AS Cargo,
+    COUNT(DISTINCT e.Donante_Receptor_ID) AS TotalDonantesUnicos
+FROM Personal per
+INNER JOIN Persona p ON per.Persona_ID = p.Persona_ID
+INNER JOIN Cargo c ON per.Cargo_ID = c.Cargo_ID
+INNER JOIN Extraccion e ON per.Personal_ID = e.Personal_ID
+GROUP BY p.Persona_ID, p.Nombre, p.ApPaterno, P.ApMaterno, C.Nombre
+HAVING COUNT(DISTINCT e.Donante_Receptor_ID) > 5;
+GO
+
+--2 Extracciones con volumen por encima de la media global
+SELECT
+    e.Extraccion_ID, e.Fecha, e.Metodo, p.Nombre + '' + p.ApPaterno + ISNULL('' + p.ApMaterno, '') AS NombreDonante,
+    e.VolumenTotal_ML
+FROM Extraccion e
+INNER JOIN Donante_Receptor dr ON e.Donante_Receptor_ID = dr.Donante_Receptor_ID
+INNER JOIN Persona p ON dr.Persona_ID = p.Persona_ID
+WHERE e.VolumenTotal_ML > (SELECT AVG(VolumenTotal_ML) FROM Extraccion);
+GO 
+
+--3 Donante VIP historico
+SELECT
+    p.DocumentoDeIdentidad, p.Nombre + '' + p.ApPaterno + ISNULL('' + p.ApMaterno, '') AS NombreDonante,
+    dr.GrupoSanguineo, dr.FactorRH, SUM(e.VolumenTotal_ML) AS TotalMililitrosDonados
+FROM Donante_Receptor dr
+INNER JOIN Persona p ON dr.Persona_ID = p.Persona_ID
+INNER JOIN Extraccion e ON dr.Donante_Receptor_ID = e.Donante_Receptor_ID
+GROUP BY p.DocumentoDeIdentidad, p.Nombre, p.ApPaterno, p.ApMaterno, dr.GrupoSanguineo, dr.FactorRH
+HAVING SUM(e.VolumenTotal_ML) >= ALL (
+        SELECT SUM(e2.VolumenTotal_ML)
+        FROM Extraccion e2 
+        GROUP BY e2.Donante_Receptor_ID
+);
+GO
+
+--4 Resumen antropometrico y ultimo peso registrado
+WITH Ultimopeso AS (
+    SELECT
+        c.Donante_Receptor_ID, c.Peso, ROW_NUMBER() OVER (PARTITION BY c.Donante_Receptor_ID
+        ORDER BY c.Fecha DESC, c, Checkeo_ID DESC) AS rn
+    FROM Checkeo c
+) 
+SELECT 
+    p.DocumentoDeIdentidad, p.Nombre + '' + Ap.ApPaterno + ISNULL('' + p.ApMaterno, '') AS NombreDonante,
+    COUNT(c.Checkeo_ID) AS TotalCheckeos,
+    AVG(c.Peso) AS PesoPromedioHistorico,
+    up.Peso AS UltimoPesoRegistrado
+FROM Donante_Receptor dr
+INNER JOIN Persona p ON dr.Persona_ID = p.Persona_ID
+INNER JOIN Checkeo c ON dr.Donante_Receptor_ID = c.Donante_Receptor_ID
+INNER JOIN Ultimopeso up ON dr.Donante_Receptor_ID = up.Donante_Receptor_ID and up.rn = 1
+GROUP BY p.DocumentoDeIdentidad, p.Nombre, p.ApPaterno, p.ApMaterno, up.Peso;
+GO
+
+/*==================================================================================== */
+
+
+/*======================================================================================================================
     TODO: Cristhian
 */
 -- 3.1 
@@ -84,7 +146,7 @@ WITH TrazabilidadUnidades AS
             ON E.Extraccion_ID = M.Extraccion_ID
         -- Donante
         INNER JOIN Donante_Receptor AS D
-            ON D.Donante_Receptor_ID = E.Donante_ID
+            ON D.Donante_Receptor_ID = E.Donante_Receptor_ID
         INNER JOIN Persona AS PD
             ON PD.Persona_ID = D.Persona_ID
     WHERE H.UnidadOrigen_ID IS NOT NULL
@@ -101,84 +163,67 @@ FROM TrazabilidadUnidades AS TU
     INNER JOIN HistorialSolicitudes AS HS
         ON HS.Unidad_ID = TU.ID_UnidadHija
     INNER JOIN Donante_Receptor AS R
-        ON R.Donante_Receptor_ID = HS.Paciente_ID
+        ON R.Donante_Receptor_ID = HS.Donante_Receptor_ID
     INNER JOIN Persona AS PR
         ON PR.Persona_ID = R.Persona_ID;
 GO
+-- Variante con la Vista V_DireccionesCompletas
+SELECT
+    TU.Donante, TU.FechaExtraccion,
+    TU.ID_UnidadMadre, TU.TipoComponenteMadre,
+    TU.ID_UnidadHija, TU.TipoComponenteHija,
+    CONCAT(
+        PR.Nombre, ' ', PR.ApPaterno, ' ',PR.ApMaterno
+    ) AS Receptor,
+    TU.VolumenUnidadML
+FROM V_UnidadesHijasInfoCompleta AS TU
+    INNER JOIN HistorialSolicitudes AS HS
+        ON HS.Unidad_ID = TU.ID_UnidadHija
+    INNER JOIN Donante_Receptor AS R
+        ON R.Donante_Receptor_ID = HS.Donante_Receptor_ID
+    INNER JOIN Persona AS PR
+        ON PR.Persona_ID = R.Persona_ID
+WHERE TU.ID_UnidadMadre IS NOT NULL;
+GO
 
--- =======================================================================================================================================
---4.1 Todo de Pablo
-select year(c.Fecha) as año,month(c.Fecha) as mes ,e.Gravedad, count(ce.Enfermedad_ID) as mensual
-from CheckeoEnfermedad ce
-inner join Enfermedad e on e.Enfermedad_ID=ce.Enfermedad_ID
-inner join Checkeo c on c.Checkeo_ID=ce.Checkeo_ID
-group by year(c.Fecha),month(c.Fecha),e.Gravedad
-having count(ce.Enfermedad_ID)>1;
+/*=======================================================================================================================================
+    4.1 Todo de Pablo - Consultas
+=======================================================================================================================================*/
 
---4.2
-select dr.Donante_Receptor_ID as ID, p.DocumentoDeIdentidad as CI, CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', p.ApMaterno) AS Nombre_Completo
-from Extraccion e
-inner join Donante_Receptor dr on dr.Donante_Receptor_ID=e.Donante_ID
-inner join Persona p on p.Persona_ID=dr.Persona_ID
-where year(e.Fecha)=2024
-except
-select dr.Donante_Receptor_ID as ID, p.DocumentoDeIdentidad as CI, CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', p.ApMaterno) AS Nombre_Completo
-from Extraccion e
-inner join Donante_Receptor dr on dr.Donante_Receptor_ID=e.Donante_ID
-inner join Persona p on p.Persona_ID=dr.Persona_ID
-where year(e.Fecha)=2025
+-- 4.1 Conteo mensual de patologías detectadas en chequeos por nivel de gravedad
+SELECT
+    YEAR(c.Fecha) AS [año],
+    MONTH(c.Fecha) AS mes,
+    e.Gravedad,
+    COUNT(ce.Enfermedad_ID) AS mensual
+FROM CheckeoEnfermedad ce
+INNER JOIN Enfermedad e ON e.Enfermedad_ID = ce.Enfermedad_ID
+INNER JOIN Checkeo c ON c.Checkeo_ID = ce.Checkeo_ID
+GROUP BY YEAR(c.Fecha), MONTH(c.Fecha), e.Gravedad
+HAVING COUNT(ce.Enfermedad_ID) > 1;
+GO
 
---4.3
-select le.LugarExtraccion_ID as ID, le.Tipo,d.Calle
-from TipoComponente tc
-inner join UnidadExtraida ue on ue.TipoComponente_ID=tc.TipoComponente_ID
-inner join Extraccion e on e.Extraccion_ID = ue.Extraccion_ID
-inner join LugarExtraccion le on le.LugarExtraccion_ID=e.LugarExtraccion_ID
-inner join Direccion d on d.Direccion_ID=le.Direccion_ID
-group by le.LugarExtraccion_ID,le.Tipo,d.Calle
-having count(distinct tc.TipoComponente_ID) = (select count(TipoComponente_ID) from TipoComponente)
+-- 4.2 Donantes que realizaron extracciones en 2024 pero no volvieron a donar en 2025
+SELECT
+    dr.Donante_Receptor_ID AS ID,
+    p.DocumentoDeIdentidad AS CI,
+    CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', p.ApMaterno) AS Nombre_Completo
+FROM Extraccion e
+INNER JOIN Donante_Receptor dr ON dr.Donante_Receptor_ID = e.Donante_Receptor_ID
+INNER JOIN Persona p ON p.Persona_ID = dr.Persona_ID
+WHERE YEAR(e.Fecha) = 2026
 
---4.4
+EXCEPT
 
-with VolumenSuma as (
-select p.Personal_ID,concat(pe.Nombre,' ',pe.ApPaterno,' ', pe.ApMaterno) as Nombre_Completo,c.Nombre as Cargo ,sum(e.VolumenTotal_ML) as total
-from Personal p
-inner join Extraccion e on e.Personal_ID=p.Personal_ID
-inner join persona pe on pe.Persona_ID= p.Persona_ID
-inner join Cargo c on c.Cargo_ID=p.Cargo_ID
-group by p.Personal_ID,pe.Nombre,pe.ApPaterno,pe.ApMaterno,c.Nombre)
-
-select vm.Nombre_Completo,vm.Cargo,vm.total,
-    (select top 1 e.Fecha
-         from Extraccion e
-         where e.Personal_ID=vm.Personal_ID
-         order by e.Fecha desc ) as Ultima_Fecha,
-    (select top 1 e.Metodo
-         from Extraccion e
-         where e.Personal_ID=vm.Personal_ID
-         order by e.Fecha desc)
-from VolumenSuma vm
-where vm.total>(select avg(VolumenSuma.total) from VolumenSuma);
-
---alt con Last value
-with VolumenSuma as (
-select p.Personal_ID,concat(pe.Nombre,' ',pe.ApPaterno,' ', pe.ApMaterno) as Nombre_Completo,c.Nombre as Cargo ,sum(e.VolumenTotal_ML) as total
-from Personal p
-inner join Extraccion e on e.Personal_ID=p.Personal_ID
-inner join persona pe on pe.Persona_ID= p.Persona_ID
-inner join Cargo c on c.Cargo_ID=p.Cargo_ID
-group by p.Personal_ID,pe.Nombre,pe.ApPaterno,pe.ApMaterno,c.Nombre),
-
-Ultima_FyM as(
-select distinct Personal_ID,
-       last_value(Fecha) over (partition by Personal_ID order by Fecha ROWS between unbounded preceding and unbounded following ) as Ultima_fecha,
-       last_value(Metodo) over (partition by Personal_ID order by Fecha ROWS  between unbounded preceding and unbounded following ) as Ultimo_metodo
-from Extraccion)
-
-select v.Nombre_Completo,v.Cargo,v.total,u.Ultima_fecha,u.Ultimo_metodo
-from VolumenSuma v
-inner join Ultima_FyM u on u.Personal_ID=v.Personal_ID
-where v.total>(select avg(total) from VolumenSuma);
+SELECT
+    dr.Donante_Receptor_ID AS ID,
+    p.DocumentoDeIdentidad AS CI,
+    CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', p.ApMaterno) AS Nombre_Completo
+FROM Extraccion e
+INNER JOIN Donante_Receptor dr ON dr.Donante_Receptor_ID = e.Donante_Receptor_ID
+INNER JOIN Persona p ON p.Persona_ID = dr.Persona_ID
+WHERE YEAR(e.Fecha) = 2025;
+GO
 
 /============================================================================================================================================
 Thierry consultas 
