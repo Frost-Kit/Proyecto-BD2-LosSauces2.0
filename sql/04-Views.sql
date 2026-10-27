@@ -68,7 +68,7 @@ FROM UnidadExtraida AS H
         ON E.Extraccion_ID = M.Extraccion_ID
     -- Donante
     INNER JOIN Donante_Receptor AS D
-        ON D.Donante_Receptor_ID = E.Donante_ID
+        ON D.Donante_Receptor_ID = E.Donante_Receptor_ID
     INNER JOIN Persona AS PD
         ON PD.Persona_ID = D.Persona_ID
 GO

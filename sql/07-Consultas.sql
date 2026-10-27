@@ -84,7 +84,7 @@ WITH TrazabilidadUnidades AS
             ON E.Extraccion_ID = M.Extraccion_ID
         -- Donante
         INNER JOIN Donante_Receptor AS D
-            ON D.Donante_Receptor_ID = E.Donante_ID
+            ON D.Donante_Receptor_ID = E.Donante_Receptor_ID
         INNER JOIN Persona AS PD
             ON PD.Persona_ID = D.Persona_ID
     WHERE H.UnidadOrigen_ID IS NOT NULL
@@ -101,7 +101,7 @@ FROM TrazabilidadUnidades AS TU
     INNER JOIN HistorialSolicitudes AS HS
         ON HS.Unidad_ID = TU.ID_UnidadHija
     INNER JOIN Donante_Receptor AS R
-        ON R.Donante_Receptor_ID = HS.Paciente_ID
+        ON R.Donante_Receptor_ID = HS.Donante_Receptor_ID
     INNER JOIN Persona AS PR
         ON PR.Persona_ID = R.Persona_ID;
 GO
@@ -118,7 +118,7 @@ FROM V_UnidadesHijasInfoCompleta AS TU
     INNER JOIN HistorialSolicitudes AS HS
         ON HS.Unidad_ID = TU.ID_UnidadHija
     INNER JOIN Donante_Receptor AS R
-        ON R.Donante_Receptor_ID = HS.Paciente_ID
+        ON R.Donante_Receptor_ID = HS.Donante_Receptor_ID
     INNER JOIN Persona AS PR
         ON PR.Persona_ID = R.Persona_ID
 WHERE TU.ID_UnidadMadre IS NOT NULL;
