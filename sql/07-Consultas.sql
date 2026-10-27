@@ -180,3 +180,48 @@ from VolumenSuma v
 inner join Ultima_FyM u on u.Personal_ID=v.Personal_ID
 where v.total>(select avg(total) from VolumenSuma);
 
+/============================================================================================================================================
+Thierry consultas 
+
+-- CONSULTA. Unidades sin asignar ni utilizadas como origen de otras
+SELECT u.Unidad_ID, t.TipoComponente, u.VolumenML, u.FechaObtencion
+FROM dbo.UnidadExtraida AS u
+INNER JOIN dbo.TipoComponente AS t
+    ON t.TipoComponente_ID = u.TipoComponente_ID
+WHERE u.Estado = 1
+  AND NOT EXISTS (
+      SELECT 1 FROM dbo.HistorialSolicitudes AS h
+      WHERE h.Unidad_ID = u.Unidad_ID
+  )
+  AND NOT EXISTS (
+      SELECT 1 FROM dbo.UnidadExtraida AS hija
+      WHERE hija.UnidadOrigen_ID = u.Unidad_ID
+  )
+ORDER BY u.Unidad_ID;
+GO
+
+-- CONSULTA. Solicitudes interurbanas: ciudad de extraccion distinta de entrega (NIVEL 3)
+SELECT h.Solicitud_ID,
+       h.Fecha AS FechaEntrega,
+       CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', ISNULL(p.ApMaterno, '')) AS PacienteReceptor,
+       h.Unidad_ID,
+       cOrigen.Nombre AS CiudadExtraccion,
+       cDestino.Nombre AS CiudadEntrega
+FROM dbo.HistorialSolicitudes AS h
+INNER JOIN dbo.Donante_Receptor AS dr
+    ON dr.Donante_Receptor_ID = h.Donante_Receptor_ID
+INNER JOIN dbo.Persona AS p ON p.Persona_ID = dr.Persona_ID
+INNER JOIN dbo.UnidadExtraida AS u ON u.Unidad_ID = h.Unidad_ID
+INNER JOIN dbo.Extraccion AS e ON e.Extraccion_ID = u.Extraccion_ID
+INNER JOIN dbo.LugarExtraccion AS l
+    ON l.LugarExtraccion_ID = e.LugarExtraccion_ID
+INNER JOIN dbo.Direccion AS dOrigen ON dOrigen.Direccion_ID = l.Direccion_ID
+INNER JOIN dbo.Direccion AS dDestino ON dDestino.Direccion_ID = h.Direccion_ID
+INNER JOIN dbo.Ciudad AS cOrigen ON cOrigen.Ciudad_ID = dOrigen.Ciudad_ID
+INNER JOIN dbo.Ciudad AS cDestino ON cDestino.Ciudad_ID = dDestino.Ciudad_ID
+WHERE dOrigen.Ciudad_ID <> dDestino.Ciudad_ID
+ORDER BY h.Fecha;
+GO
+
+
+
