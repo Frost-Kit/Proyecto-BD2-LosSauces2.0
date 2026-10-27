@@ -225,84 +225,48 @@ INNER JOIN Persona p ON p.Persona_ID = dr.Persona_ID
 WHERE YEAR(e.Fecha) = 2025;
 GO
 
--- 4.3 Lugares de extracción que han generado todos los tipos de componentes registrados
-SELECT
-    le.LugarExtraccion_ID AS ID,
-    le.Tipo,
-    d.Calle
-FROM TipoComponente tc
-INNER JOIN UnidadExtraida ue ON ue.TipoComponente_ID = tc.TipoComponente_ID
-INNER JOIN Extraccion e ON e.Extraccion_ID = ue.Extraccion_ID
-INNER JOIN LugarExtraccion le ON le.LugarExtraccion_ID = e.LugarExtraccion_ID
-INNER JOIN Direccion d ON d.Direccion_ID = le.Direccion_ID
-GROUP BY le.LugarExtraccion_ID, le.Tipo, d.Calle
-HAVING COUNT(DISTINCT tc.TipoComponente_ID) = (SELECT COUNT(TipoComponente_ID) FROM TipoComponente);
+/============================================================================================================================================
+Thierry consultas 
+
+-- CONSULTA. Unidades sin asignar ni utilizadas como origen de otras
+SELECT u.Unidad_ID, t.TipoComponente, u.VolumenML, u.FechaObtencion
+FROM dbo.UnidadExtraida AS u
+INNER JOIN dbo.TipoComponente AS t
+    ON t.TipoComponente_ID = u.TipoComponente_ID
+WHERE u.Estado = 1
+  AND NOT EXISTS (
+      SELECT 1 FROM dbo.HistorialSolicitudes AS h
+      WHERE h.Unidad_ID = u.Unidad_ID
+  )
+  AND NOT EXISTS (
+      SELECT 1 FROM dbo.UnidadExtraida AS hija
+      WHERE hija.UnidadOrigen_ID = u.Unidad_ID
+  )
+ORDER BY u.Unidad_ID;
 GO
 
--- 4.4 Personal con volumen total extraído superior al promedio general (Versión con Subconsultas)
-WITH VolumenSuma AS (
-    SELECT
-        p.Personal_ID,
-        CONCAT(pe.Nombre, ' ', pe.ApPaterno, ' ', pe.ApMaterno) AS Nombre_Completo,
-        c.Nombre AS Cargo,
-        SUM(e.VolumenTotal_ML) AS total
-    FROM Personal p
-    INNER JOIN Extraccion e ON e.Personal_ID = p.Personal_ID
-    INNER JOIN Persona pe ON pe.Persona_ID = p.Persona_ID
-    INNER JOIN Cargo c ON c.Cargo_ID = p.Cargo_ID
-    GROUP BY p.Personal_ID, pe.Nombre, pe.ApPaterno, pe.ApMaterno, c.Nombre
-)
-SELECT
-    vm.Nombre_Completo,
-    vm.Cargo,
-    vm.total,
-    (SELECT TOP 1 e.Fecha
-     FROM Extraccion e
-     WHERE e.Personal_ID = vm.Personal_ID
-     ORDER BY e.Fecha DESC) AS Ultima_Fecha,
-    (SELECT TOP 1 e.Metodo
-     FROM Extraccion e
-     WHERE e.Personal_ID = vm.Personal_ID
-     ORDER BY e.Fecha DESC) AS Ultimo_Metodo
-FROM VolumenSuma vm
-WHERE vm.total > (SELECT AVG(VolumenSuma.total) FROM VolumenSuma);
+-- CONSULTA. Solicitudes interurbanas: ciudad de extraccion distinta de entrega (NIVEL 3)
+SELECT h.Solicitud_ID,
+       h.Fecha AS FechaEntrega,
+       CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', ISNULL(p.ApMaterno, '')) AS PacienteReceptor,
+       h.Unidad_ID,
+       cOrigen.Nombre AS CiudadExtraccion,
+       cDestino.Nombre AS CiudadEntrega
+FROM dbo.HistorialSolicitudes AS h
+INNER JOIN dbo.Donante_Receptor AS dr
+    ON dr.Donante_Receptor_ID = h.Donante_Receptor_ID
+INNER JOIN dbo.Persona AS p ON p.Persona_ID = dr.Persona_ID
+INNER JOIN dbo.UnidadExtraida AS u ON u.Unidad_ID = h.Unidad_ID
+INNER JOIN dbo.Extraccion AS e ON e.Extraccion_ID = u.Extraccion_ID
+INNER JOIN dbo.LugarExtraccion AS l
+    ON l.LugarExtraccion_ID = e.LugarExtraccion_ID
+INNER JOIN dbo.Direccion AS dOrigen ON dOrigen.Direccion_ID = l.Direccion_ID
+INNER JOIN dbo.Direccion AS dDestino ON dDestino.Direccion_ID = h.Direccion_ID
+INNER JOIN dbo.Ciudad AS cOrigen ON cOrigen.Ciudad_ID = dOrigen.Ciudad_ID
+INNER JOIN dbo.Ciudad AS cDestino ON cDestino.Ciudad_ID = dDestino.Ciudad_ID
+WHERE dOrigen.Ciudad_ID <> dDestino.Ciudad_ID
+ORDER BY h.Fecha;
 GO
 
--- 4.4 Alternativa con Función de Ventana (LAST_VALUE)
-WITH VolumenSuma AS (
-    SELECT
-        p.Personal_ID,
-        CONCAT(pe.Nombre, ' ', pe.ApPaterno, ' ', pe.ApMaterno) AS Nombre_Completo,
-        c.Nombre AS Cargo,
-        SUM(e.VolumenTotal_ML) AS total
-    FROM Personal p
-    INNER JOIN Extraccion e ON e.Personal_ID = p.Personal_ID
-    INNER JOIN Persona pe ON pe.Persona_ID = p.Persona_ID
-    INNER JOIN Cargo c ON c.Cargo_ID = p.Cargo_ID
-    GROUP BY p.Personal_ID, pe.Nombre, pe.ApPaterno, pe.ApMaterno, c.Nombre
-),
-Ultima_FyM AS (
-    SELECT DISTINCT
-        Personal_ID,
-        LAST_VALUE(Fecha) OVER (
-            PARTITION BY Personal_ID
-            ORDER BY Fecha
-            ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-        ) AS Ultima_fecha,
-        LAST_VALUE(Metodo) OVER (
-            PARTITION BY Personal_ID
-            ORDER BY Fecha
-            ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-        ) AS Ultimo_metodo
-    FROM Extraccion
-)
-SELECT
-    v.Nombre_Completo,
-    v.Cargo,
-    v.total,
-    u.Ultima_fecha,
-    u.Ultimo_metodo
-FROM VolumenSuma v
-INNER JOIN Ultima_FyM u ON u.Personal_ID = v.Personal_ID
-WHERE v.total > (SELECT AVG(total) FROM VolumenSuma);
-GO
+
+
