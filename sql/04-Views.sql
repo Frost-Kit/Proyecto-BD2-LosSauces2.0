@@ -156,3 +156,28 @@ LEFT JOIN dbo.CheckeoEnfermedad ce ON ce.Checkeo_ID = ch.Checkeo_ID
 GROUP BY ch.Checkeo_ID, dr.Donante_Receptor_ID, p.Nombre, p.ApPaterno, p.ApMaterno,
          ch.Fecha, ch.Peso, ch.Altura;
 GO
+
+
+/*=======================================================================================================================================
+THIERRYY
+*/
+CREATE OR ALTER VIEW dbo.vw_UnidadesSinAsignar
+AS
+SELECT
+    u.Unidad_ID,
+    t.TipoComponente,
+    u.VolumenML,
+    u.FechaObtencion,
+    u.Estado
+FROM dbo.UnidadExtraida AS u
+INNER JOIN dbo.TipoComponente AS t
+    ON u.TipoComponente_ID = t.TipoComponente_ID
+WHERE u.Estado = 1
+AND NOT EXISTS (
+    SELECT 1
+    FROM dbo.HistorialSolicitudes AS h
+    WHERE h.Unidad_ID = u.Unidad_ID
+);
+
+
+
