@@ -30,44 +30,16 @@ y trazabilidad.
 
 ## Estructura del repositorio
 
-  -----------------------------------------------------------------------
-  Archivo                             Descripción
-  ----------------------------------- -----------------------------------
-  `01-CreacionDB.sql`                 Crea la base de datos `BancoSangre`
-                                      y sus tablas, claves, relaciones y
-                                      restricciones.
-
-  `02-InsertData.sql`                 Inserta datos de ejemplo para
-                                      poblar las tablas y permitir
-                                      consultas de prueba.
-
-  `03-Indices.sql`                    Define índices no agrupados para
-                                      apoyar búsquedas por fecha de
-                                      extracción, personal responsable y
-                                      fecha de chequeo médico.
-
-  `04-Views.sql`                      Define vistas para simplificar
-                                      consultas y presentar información
-                                      relacionada, como donantes,
-                                      direcciones, unidades derivadas y
-                                      alertas.
-
-  `05-Funciones.sql`                  Contiene funciones para consultar
-                                      información de componentes,
-                                      calcular vencimientos, contar
-                                      extracciones y resumir patologías
-                                      por mes.
-
-  `06-Procedimientos.sql`             Define procedimientos almacenados;
-                                      incluye la comparación de donantes
-                                      entre dos años mediante `EXCEPT`.
-
-  `07-Consultas.sql`                  Reúne consultas SQL del proyecto
-                                      organizadas por secciones e
-                                      integrantes.
-
-  -----------------------------------------------------------------------
-
+  
+| Archivo                          |  Descripción
+|----------------------------------|---------------------------------------|
+|`01-CreacionDB.sql`               |  Crea la base de datos `BancoSangre` y sus tablas, claves, relaciones y restricciones.|
+|`02-InsertData.sql`               |    Inserta datos de ejemplo para poblar las tablas y permitir consultas de prueba. |
+|`03-Indices.sql`                  |    Define índices no agrupados para apoyar búsquedas por fecha de extracción, personal responsable y fecha de chequeo médico. |
+|`04-Views.sql`                    |    Define vistas para simplificar consultas y presentar información relacionada, como donantes, direcciones, unidades derivadas y alertas. |
+|`05-Funciones.sql`              |    Contiene funciones para consultar información de componentes, calcular vencimientos, contar extracciones y resumir patologías por mes. |
+|`06-Procedimientos.sql`         |    Define procedimientos almacenados; incluye la comparación de donantes entre dos años mediante `EXCEPT`. |
+|`07-Consultas.sql`              |    Reúne consultas SQL del proyectoorganizadas por secciones e integrantes. |
 
 ## Modelo de datos
 
