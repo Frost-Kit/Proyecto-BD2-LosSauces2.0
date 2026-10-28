@@ -125,8 +125,7 @@ WHERE v.total > (SELECT AVG(total) FROM VolumenSuma);
 GO
 
 /*=======================================================================================================================================
-*/
-THIERRY
+    THIERRY*/
 --Alertas actuales: unidades aun marcadas activas y no asignadas
 --que venceran dentro de 7 dias, incluyendo las ya vencidas.
 CREATE OR ALTER VIEW dbo.vw_AlertasVencimiento
@@ -142,8 +141,7 @@ WHERE i.Estado = 1
 GO
 
 /*=======================================================================================================================================
-*/
-ENZO
+    ENZO */
 -- V5. Historial de evaluaciones previas; no es una decision de aptitud.
 CREATE OR ALTER VIEW dbo.vw_CheckeosDonantes
 AS

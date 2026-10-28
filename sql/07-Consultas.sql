@@ -1,19 +1,56 @@
 -- 7. CONSULTAS
-/* --------------------  Consultas de Mimi --------------------*/
+Use Banco_de_Sangre;
+GO
 
--- 1 --
-select p.nombre, p.ApPaterno, p.ApMaterno, p.DocumentoDeIdentidad, FactorRH, GrupoSanguineo, sum(u.Unidad_ID) as VolumenTotalML, count(h.Unidad_ID) as CantidadUnidades
+/* --------------------  Consultas de Emily --------------------*/
+
+
+--- 1. Pacientes receptores de alto requerimiento transfusional ---
+
+select CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', p.ApMaterno) AS NombreCompleto, p.DocumentoDeIdentidad, 
+FactorRH+GrupoSanguineo as tipo_sangre, count(h.Unidad_ID) as CantidadUnidades, sum(u.VolumenML) as VolumenTotalML
 from Persona p
 	INNER JOIN Donante_Receptor dr on dr.Persona_ID = p.Persona_ID
-	INNER JOIN HistorialSolicitudes h on h.Paciente_ID = dr.Donante_Receptor_ID
+	INNER JOIN HistorialSolicitudes h on h.Donante_Receptor_ID = dr.Donante_Receptor_ID
 	INNER JOIN UnidadExtraida u on u.Unidad_ID = h.Unidad_ID
 Group by p.nombre, p.ApPaterno, p.ApMaterno, p.DocumentoDeIdentidad, dr.GrupoSanguineo, dr.FactorRH
 Having count(h.Unidad_ID) > 2;
 
+--- 2. Donantes evaluados pero sin extracciones registradas ---
+
+SELECT p.DocumentoDeIdentidad, CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', p.ApMaterno) AS NombreCompleto,
+    dr.FactorRH+dr.GrupoSanguineo as tipo_sangre 
+FROM Persona p
+INNER JOIN Donante_Receptor dr
+    ON p.Persona_ID = dr.Persona_ID
+WHERE EXISTS (
+    SELECT 1
+    FROM Checkeo c
+    WHERE c.Donante_Receptor_ID = dr.Donante_Receptor_ID
+)
+AND NOT EXISTS (
+    SELECT 1
+    FROM Extraccion e
+    WHERE e.Donante_Receptor_ID = dr.Donante_Receptor_ID
+);
+
+--- 3. Unidades fragmentadas con volumen superior al promedio de su propio componente ---
+
+SELECT u.Unidad_ID, u.UnidadOrigen_ID, tc.TipoComponente, u.VolumenML
+FROM UnidadExtraida u
+INNER JOIN TipoComponente tc
+    ON u.TipoComponente_ID = tc.TipoComponente_ID
+WHERE u.UnidadOrigen_ID IS NOT NULL
+AND u.VolumenML > (
+    SELECT AVG(U2.VolumenML)
+    FROM UnidadExtraida u2
+    WHERE u2.TipoComponente_ID = u.TipoComponente_ID
+);
+
 /* =================JAEL==========================*/
 USE BancoSangre;
 GO
---1 Cobertura de atencion del personal de salud--
+-- 5 Cobertura de atencion del personal de salud--
 SELECT
     p.Nombre + '' + p.ApPaterno + ISNULL('' + p.ApMaterno, '') AS NombreTrabajador, c.Nombre AS Cargo,
     COUNT(DISTINCT e.Donante_Receptor_ID) AS TotalDonantesUnicos
@@ -25,7 +62,7 @@ GROUP BY p.Persona_ID, p.Nombre, p.ApPaterno, P.ApMaterno, C.Nombre
 HAVING COUNT(DISTINCT e.Donante_Receptor_ID) > 5;
 GO
 
---2 Extracciones con volumen por encima de la media global
+-- 6 Extracciones con volumen por encima de la media global
 SELECT
     e.Extraccion_ID, e.Fecha, e.Metodo, p.Nombre + '' + p.ApPaterno + ISNULL('' + p.ApMaterno, '') AS NombreDonante,
     e.VolumenTotal_ML
@@ -35,7 +72,7 @@ INNER JOIN Persona p ON dr.Persona_ID = p.Persona_ID
 WHERE e.VolumenTotal_ML > (SELECT AVG(VolumenTotal_ML) FROM Extraccion);
 GO 
 
---3 Donante VIP historico
+-- 7 Donante VIP historico
 SELECT
     p.DocumentoDeIdentidad, p.Nombre + '' + p.ApPaterno + ISNULL('' + p.ApMaterno, '') AS NombreDonante,
     dr.GrupoSanguineo, dr.FactorRH, SUM(e.VolumenTotal_ML) AS TotalMililitrosDonados
@@ -50,7 +87,7 @@ HAVING SUM(e.VolumenTotal_ML) >= ALL (
 );
 GO
 
---4 Resumen antropometrico y ultimo peso registrado
+--8 Resumen antropometrico y ultimo peso registrado
 WITH Ultimopeso AS (
     SELECT
         c.Donante_Receptor_ID, c.Peso, ROW_NUMBER() OVER (PARTITION BY c.Donante_Receptor_ID
@@ -75,7 +112,7 @@ GO
 /*======================================================================================================================
     TODO: Cristhian
 */
--- 3.1 
+-- 9 o 3.1 Índice de descarte por tipo de hemocomponente.
 SELECT 
     TP.TipoComponente,
     TP.DiasVigencia,
@@ -89,7 +126,7 @@ GROUP BY
 HAVING COUNT(UE.Unidad_ID) > 3;
 GO
 
--- 3.2
+-- 10 o 3.2 Red logística de ciudades con extracción y solicitud simultánea.
 -- Aqui talves unas views para acortar codigo...
 SELECT DISTINCT
     DG.Ciudad,
@@ -104,7 +141,7 @@ FROM V_DireccionesCompletas DG
     INNER JOIN HistorialSolicitudes AS HS ON DG.Direccion_ID = HS.Direccion_ID;
 GO
 
--- 3.3
+-- 11. o 3.3 Pérdida excesiva de volumen en el fraccionamiento sanguíneo. 
 SELECT 
     UE.Unidad_ID AS ID_Unidad
 FROM UnidadExtraida UE 
@@ -116,7 +153,7 @@ WHERE UE.UnidadOrigen_ID IS NULL
     ) < (VolumenML * 0.75);
 GO
 
--- 3.4
+-- 12 o 3.4 Trazabilidad de extremo a extremo en unidades fraccionadas.
 WITH TrazabilidadUnidades AS
 (
     SELECT
@@ -190,7 +227,7 @@ GO
     4.1 Todo de Pablo - Consultas
 =======================================================================================================================================*/
 
--- 4.1 Conteo mensual de patologías detectadas en chequeos por nivel de gravedad
+-- 13 o 4.1 Conteo mensual de patologías detectadas en chequeos por nivel de gravedad
 SELECT
     YEAR(c.Fecha) AS [año],
     MONTH(c.Fecha) AS mes,
@@ -203,7 +240,7 @@ GROUP BY YEAR(c.Fecha), MONTH(c.Fecha), e.Gravedad
 HAVING COUNT(ce.Enfermedad_ID) > 1;
 GO
 
--- 4.2 Donantes que realizaron extracciones en 2024 pero no volvieron a donar en 2025
+-- 14 o 4.2 Donantes que realizaron extracciones en 2024 pero no volvieron a donar en 2025
 SELECT
     dr.Donante_Receptor_ID AS ID,
     p.DocumentoDeIdentidad AS CI,
@@ -225,7 +262,7 @@ INNER JOIN Persona p ON p.Persona_ID = dr.Persona_ID
 WHERE YEAR(e.Fecha) = 2025;
 GO
 
--- 4.3 Lugares de extracción que han generado todos los tipos de componentes registrados
+-- 15 o 4.3 Lugares de extracción que han generado todos los tipos de componentes registrados
 SELECT
     le.LugarExtraccion_ID AS ID,
     le.Tipo,
@@ -239,7 +276,7 @@ GROUP BY le.LugarExtraccion_ID, le.Tipo, d.Calle
 HAVING COUNT(DISTINCT tc.TipoComponente_ID) = (SELECT COUNT(TipoComponente_ID) FROM TipoComponente);
 GO
 
--- 4.4 Personal con volumen total extraído superior al promedio general (Versión con Subconsultas)
+-- 16 o 4.4 Personal con volumen total extraído superior al promedio general (Versión con Subconsultas)
 WITH VolumenSuma AS (
     SELECT
         p.Personal_ID,
@@ -310,7 +347,7 @@ GO
 /*============================================================================================================================================
 Thierry consultas */
 
--- CONSULTA. Unidades sin asignar ni utilizadas como origen de otras
+-- CONSULTA 24. Unidades sin asignar ni utilizadas como origen de otras
 SELECT u.Unidad_ID, t.TipoComponente, u.VolumenML, u.FechaObtencion
 FROM dbo.UnidadExtraida AS u
 INNER JOIN dbo.TipoComponente AS t
@@ -327,7 +364,7 @@ WHERE u.Estado = 1
 ORDER BY u.Unidad_ID;
 GO
 
--- CONSULTA. Solicitudes interurbanas: ciudad de extraccion distinta de entrega (NIVEL 3)
+-- CONSULTA 25. Solicitudes interurbanas: ciudad de extraccion distinta de entrega (NIVEL 3)
 SELECT h.Solicitud_ID,
        h.Fecha AS FechaEntrega,
        CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', ISNULL(p.ApMaterno, '')) AS PacienteReceptor,
