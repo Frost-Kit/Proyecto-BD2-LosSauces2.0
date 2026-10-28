@@ -387,5 +387,72 @@ WHERE dOrigen.Ciudad_ID <> dDestino.Ciudad_ID
 ORDER BY h.Fecha;
 GO
 
+/*============================================================================================================================================
+Matias consultas */
+/* CONSULTA 26 Demanda mensual de componentes por grupo sanguíneo y RH*/
+USE BancoSangre;
+GO
+
+SELECT 
+    YEAR(hs.Fecha) AS Anio,
+    MONTH(hs.Fecha) AS Mes,
+    dr.GrupoSanguineo,
+    dr.FactorRH,
+    SUM(ue.VolumenML) AS VolumenTotalDespachado
+FROM HistorialSolicitudes hs
+INNER JOIN Donante_Receptor dr ON hs.Paciente_ID = dr.Donante_Receptor_ID
+INNER JOIN UnidadExtraida ue ON hs.Unidad_ID = ue.Unidad_ID
+GROUP BY 
+    YEAR(hs.Fecha),
+    MONTH(hs.Fecha),
+    dr.GrupoSanguineo,
+    dr.FactorRH
+HAVING SUM(ue.VolumenML) > 1000.00;
+
+
+
+/*------------------------------------------------------------------------------------------------*/
+/* CONSULTA 27 Directorio maestro de contactos del banco de sangre */
+-- Personas que pertenecen al Personal
+SELECT DISTINCT
+    p.DocumentoDeIdentidad,
+    CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', ISNULL(p.ApMaterno, '')) AS NombreCompleto,
+    e.DireccionE AS CorreoElectronico,
+    'Personal' AS TipoVinculo
+FROM Persona p
+INNER JOIN EmailPersona ep ON p.Persona_ID = ep.Persona_ID
+INNER JOIN Email e ON ep.Email_ID = e.Email_ID
+INNER JOIN Personal per ON p.Persona_ID = per.Persona_ID
+WHERE ep.Flag = 1
+
+UNION
+
+-- Personas que son Donantes
+SELECT DISTINCT
+    p.DocumentoDeIdentidad,
+    CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', ISNULL(p.ApMaterno, '')) AS NombreCompleto,
+    e.DireccionE AS CorreoElectronico,
+    'Donante' AS TipoVinculo
+FROM Persona p
+INNER JOIN EmailPersona ep ON p.Persona_ID = ep.Persona_ID
+INNER JOIN Email e ON ep.Email_ID = e.Email_ID
+INNER JOIN Donante_Receptor dr ON p.Persona_ID = dr.Persona_ID
+INNER JOIN Extraccion ex ON dr.Donante_Receptor_ID = ex.Donante_ID
+WHERE ep.Flag = 1
+
+UNION
+
+-- Personas que son Pacientes Receptores
+SELECT DISTINCT
+    p.DocumentoDeIdentidad,
+    CONCAT(p.Nombre, ' ', p.ApPaterno, ' ', ISNULL(p.ApMaterno, '')) AS NombreCompleto,
+    e.DireccionE AS CorreoElectronico,
+    'Paciente Receptor' AS TipoVinculo
+FROM Persona p
+INNER JOIN EmailPersona ep ON p.Persona_ID = ep.Persona_ID
+INNER JOIN Email e ON ep.Email_ID = e.Email_ID
+INNER JOIN Donante_Receptor dr ON p.Persona_ID = dr.Persona_ID
+INNER JOIN HistorialSolicitudes hs ON dr.Donante_Receptor_ID = hs.Paciente_ID
+WHERE ep.Flag = 1;
 
 
