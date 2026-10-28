@@ -128,17 +128,64 @@ GO
     THIERRY*/
 --Alertas actuales: unidades aun marcadas activas y no asignadas
 --que venceran dentro de 7 dias, incluyendo las ya vencidas.
+
+USE BancoSangre;
+GO
+
 CREATE OR ALTER VIEW dbo.vw_AlertasVencimiento
 AS
-SELECT i.Unidad_ID, i.TipoComponente, i.FechaObtencion, i.FechaVencimiento,
-       DATEDIFF(DAY, GETDATE(), i.FechaVencimiento) AS DiasRestantes,
-       CASE WHEN i.FechaVencimiento <= GETDATE() THEN 'Vencida'
-            ELSE 'Proxima a vencer' END AS Alerta
-FROM dbo.vw_InventarioUnidades i
-WHERE i.Estado = 1
-  AND NOT EXISTS (SELECT 1 FROM dbo.HistorialSolicitudes h WHERE h.Unidad_ID = i.Unidad_ID)
-  AND i.FechaVencimiento <= DATEADD(DAY, 7, GETDATE());
+SELECT
+    u.Unidad_ID,
+    t.TipoComponente,
+    u.FechaObtencion,
+
+    DATEADD(
+        DAY,
+        t.DiasVigencia,
+        u.FechaObtencion
+    ) AS FechaVencimiento,
+
+    DATEDIFF(
+        DAY,
+        GETDATE(),
+        DATEADD(DAY, t.DiasVigencia, u.FechaObtencion)
+    ) AS DiasRestantes,
+
+    CASE
+        WHEN DATEADD(
+            DAY,
+            t.DiasVigencia,
+            u.FechaObtencion
+        ) <= GETDATE()
+        THEN 'Vencida'
+        ELSE 'Proxima a vencer'
+    END AS Alerta
+
+FROM dbo.UnidadExtraida AS u
+
+INNER JOIN dbo.TipoComponente AS t
+    ON u.TipoComponente_ID = t.TipoComponente_ID
+
+WHERE u.Estado = 1
+
+AND NOT EXISTS (
+    SELECT 1
+    FROM dbo.HistorialSolicitudes AS h
+    WHERE h.Unidad_ID = u.Unidad_ID
+)
+
+AND DATEADD(
+    DAY,
+    t.DiasVigencia,
+    u.FechaObtencion
+) <= DATEADD(DAY, 7, GETDATE());
 GO
+
+-- PROBAR LA VISTA
+SELECT *
+FROM dbo.vw_AlertasVencimiento;
+GO
+
 
 /*=======================================================================================================================================
     ENZO */
