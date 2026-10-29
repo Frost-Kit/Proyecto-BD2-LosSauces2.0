@@ -125,22 +125,6 @@ WHERE v.total > (SELECT AVG(total) FROM VolumenSuma);
 GO
 
 /*=======================================================================================================================================
-    THIERRY*/
---Alertas actuales: unidades aun marcadas activas y no asignadas
---que venceran dentro de 7 dias, incluyendo las ya vencidas.
-CREATE OR ALTER VIEW dbo.vw_AlertasVencimiento
-AS
-SELECT i.Unidad_ID, i.TipoComponente, i.FechaObtencion, i.FechaVencimiento,
-       DATEDIFF(DAY, GETDATE(), i.FechaVencimiento) AS DiasRestantes,
-       CASE WHEN i.FechaVencimiento <= GETDATE() THEN 'Vencida'
-            ELSE 'Proxima a vencer' END AS Alerta
-FROM dbo.vw_InventarioUnidades i
-WHERE i.Estado = 1
-  AND NOT EXISTS (SELECT 1 FROM dbo.HistorialSolicitudes h WHERE h.Unidad_ID = i.Unidad_ID)
-  AND i.FechaVencimiento <= DATEADD(DAY, 7, GETDATE());
-GO
-
-/*=======================================================================================================================================
     ENZO */
 -- V5. Historial de evaluaciones previas; no es una decision de aptitud.
 CREATE OR ALTER VIEW dbo.vw_CheckeosDonantes
@@ -150,7 +134,7 @@ SELECT ch.Checkeo_ID, dr.Donante_Receptor_ID AS Donante_ID,
        ch.Fecha, ch.Peso, ch.Altura,
        COUNT(ce.Enfermedad_ID) AS NumeroAntecedentesRegistrados
 FROM dbo.Checkeo ch
-JOIN dbo.Donante_Receptor dr ON dr.Donante_Receptor_ID = ch.Donante_ID
+JOIN dbo.Donante_Receptor dr ON dr.Donante_Receptor_ID = ch.Donante_Receptor_ID
 JOIN dbo.Persona p ON p.Persona_ID = dr.Persona_ID
 LEFT JOIN dbo.CheckeoEnfermedad ce ON ce.Checkeo_ID = ch.Checkeo_ID
 GROUP BY ch.Checkeo_ID, dr.Donante_Receptor_ID, p.Nombre, p.ApPaterno, p.ApMaterno,

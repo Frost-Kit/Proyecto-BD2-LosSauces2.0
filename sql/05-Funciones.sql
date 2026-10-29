@@ -1,4 +1,6 @@
 -- 5. FUNCIONES
+USE Banco_de_Sangre;
+GO
 /*=======================================================================================================================================
     TODO: Cristhian
 */
@@ -19,7 +21,7 @@ GO
     TODO: Pablo (Función de Tabla en Línea)
 =======================================================================================================================================*/
 
-CREATE FUNCTION dbo.Fn_PatologiasMensuales (@MinCasos INT)
+CREATE OR ALTER FUNCTION dbo.Fn_PatologiasMensuales (@MinCasos INT)
 RETURNS TABLE
 AS
 RETURN (
@@ -64,7 +66,7 @@ RETURNS INT
 AS
 BEGIN
     DECLARE @Total INT;
-    SELECT @Total = COUNT(*) FROM dbo.Extraccion WHERE Donante_ID = @DonanteID;
+    SELECT @Total = COUNT(*) FROM dbo.Extraccion WHERE Donante_Receptor_ID = @DonanteID;
     RETURN @Total;
 END;
 GO
