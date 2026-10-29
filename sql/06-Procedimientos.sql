@@ -33,10 +33,10 @@ BEGIN
         IF @Persona_ID IS NULL OR @Persona_ID = 0
         BEGIN
             -- por si ya hay alguien con el mismo documento de identidad, se va.. 
-            IF EXISTS (SELECT 1 FROM Persona WHERE DocumentoDeIdentidad = @DocumentoDeIdentidad)
-            BEGIN
-                THROW 50002, 'El documento de identidad ya se encuentra registrado en el sistema.', 1;
-            END
+            -- IF EXISTS (SELECT 1 FROM Persona WHERE DocumentoDeIdentidad = @DocumentoDeIdentidad)
+            -- BEGIN
+            --     THROW 50002, 'El documento de identidad ya se encuentra registrado en el sistema.', 1;
+            -- END
 
             INSERT INTO Persona (Nombre, ApPaterno, ApMaterno, FechaNacimiento, DocumentoDeIdentidad, Sexo)
                 VALUES (@Nombre, @ApPaterno, @ApMaterno, @FechaNacimiento, @DocumentoDeIdentidad, @Sexo);
@@ -75,7 +75,7 @@ GO
 =======================================================================================================================================*/
 
 -- Procedimiento para la Consulta 4.2: Fidelización y deserción anual de donantes
-CREATE PROCEDURE dbo.Sp_FidelizacionDesercionDonantes
+CREATE OR ALTER PROCEDURE dbo.Sp_FidelizacionDesercionDonantes
     @AnioActivo INT,
     @AnioInactivo INT
 AS
@@ -107,3 +107,94 @@ GO
 -- Prueba del procedimiento almacenado
 EXEC dbo.Sp_FidelizacionDesercionDonantes @AnioActivo = 2026, @AnioInactivo = 2025;
 GO
+
+-- Proceso 2
+CREATE OR ALTER PROCEDURE sp_RegistrarDonador
+    -- Datos de Persona
+    @Nombre VARCHAR(100),
+    @ApPaterno VARCHAR(100),
+    @ApMaterno VARCHAR(100) = NULL,
+    @FechaNacimiento DATE,
+    @DocumentoDeIdentidad VARCHAR(30),
+    @Sexo CHAR(1),
+    -- Datos de Donante_Receptor
+    @FactorRH CHAR(1),
+    @GrupoSanguineo VARCHAR(2),
+    -- Datos de Contacto (Opcionales)
+    @DireccionEmail VARCHAR(150) = NULL,
+    @NumTelefono VARCHAR(20) = NULL,
+    @CodPais VARCHAR(8) = '+591',
+    @TipoTelefono VARCHAR(30) = 'Movil'
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        DECLARE @Persona_ID INT;
+        DECLARE @Donante_Receptor_ID INT;
+
+        SELECT @Persona_ID = Persona_ID 
+        FROM Persona 
+        WHERE DocumentoDeIdentidad = @DocumentoDeIdentidad;
+
+        IF @Persona_ID IS NULL
+        BEGIN
+            INSERT INTO Persona (Nombre, ApPaterno, ApMaterno, FechaNacimiento, DocumentoDeIdentidad, Sexo)
+            VALUES (@Nombre, @ApPaterno, @ApMaterno, @FechaNacimiento, @DocumentoDeIdentidad, @Sexo);
+
+            SET @Persona_ID = SCOPE_IDENTITY();
+        END
+
+        IF EXISTS (SELECT 1 FROM Donante_Receptor WHERE Persona_ID = @Persona_ID)
+        BEGIN
+            RAISERROR('La persona ya se encuentra registrada como donante/receptor.', 16, 1);
+        END
+
+        INSERT INTO Donante_Receptor (Persona_ID, FactorRH, GrupoSanguineo)
+        VALUES (@Persona_ID, @FactorRH, @GrupoSanguineo);
+
+        SET @Donante_Receptor_ID = SCOPE_IDENTITY();
+
+        IF @DireccionEmail IS NOT NULL
+        BEGIN
+            INSERT INTO Email (Persona_ID, DireccionE)
+            VALUES (@Persona_ID, @DireccionEmail);
+        END
+
+        IF @NumTelefono IS NOT NULL
+        BEGIN
+            INSERT INTO Telefono (Persona_ID, numTelefono, CodPais, TipoTelefono)
+            VALUES (@Persona_ID, @NumTelefono, @CodPais, @TipoTelefono);
+        END
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        THROW;
+    END CATCH
+END;
+GO
+
+-- ESCENARIO 1: Registro completo (con Email y Teléfono)
+EXEC sp_RegistrarDonador
+    @Nombre = 'Carlos',
+    @ApPaterno = 'Mendoza',
+    @ApMaterno = 'Rojas',
+    @FechaNacimiento = '1998-05-14',
+    @DocumentoDeIdentidad = '10458921',
+    @Sexo = 'M',
+    @FactorRH = '+',
+    @GrupoSanguineo = 'O',
+    @DireccionEmail = 'carlos.mendoza@correo.com',
+    @NumTelefono = '71234567',
+    @CodPais = '+591',
+    @TipoTelefono = 'Movil';
+GO
+
+select * from Persona
+order by Persona_ID desc;
